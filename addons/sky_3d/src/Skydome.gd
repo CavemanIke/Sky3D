@@ -268,7 +268,7 @@ func update_sun_coords() -> void:
 @export_range(-180.0, 180.0, 0.00001) var moon_azimuth: float = 5.0: set = set_moon_azimuth
 @export_range(-180.0, 180.0, 0.00001) var moon_altitude: float = -80.0: set = set_moon_altitude
 
-var __finish_set_moon_pos = false
+var __finish_set_moon_pos: bool = false
 var __moon_transform: Transform3D = Transform3D()
 
 
@@ -366,9 +366,9 @@ func update_beta_ray() -> void:
 	if !is_scene_built:
 		return
 
-	var wll = ScatterLib.compute_wavelenghts_lambda(atm_wavelengths)
-	var wls = ScatterLib.compute_wavlenghts(wll)
-	var betaRay = ScatterLib.compute_beta_ray(wls)
+	var wll: Vector3 = ScatterLib.compute_wavelenghts_lambda(atm_wavelengths)
+	var wls: Vector3 = ScatterLib.compute_wavlenghts(wll)
+	var betaRay: Vector3 = ScatterLib.compute_beta_ray(wls)
 	sky_material.set_shader_parameter(Sky3D.ATM_BETA_RAY_P, betaRay)
 
 	
@@ -491,7 +491,7 @@ func update_beta_mie() -> void:
 	if !is_scene_built:
 		return
 
-	var bm = ScatterLib.compute_beta_mie(atm_mie, atm_turbidity)
+	var bm: Vector3 = ScatterLib.compute_beta_mie(atm_mie, atm_turbidity)
 	sky_material.set_shader_parameter(Sky3D.ATM_BETA_MIE_P, bm)
 
 
@@ -531,7 +531,7 @@ func set_atm_sun_mie_anisotropy(value: float) -> void:
 func update_atm_sun_mie_anisotropy() -> void:
 	if !is_scene_built:
 		return
-	var partial = ScatterLib.get_partial_mie_phase(atm_sun_mie_anisotropy)
+	var partial: Vector3 = ScatterLib.get_partial_mie_phase(atm_sun_mie_anisotropy)
 	sky_material.set_shader_parameter(Sky3D.ATM_SUN_PARTIAL_MIE_PHASE_P, partial)
 
 
@@ -571,7 +571,7 @@ func set_atm_moon_mie_anisotropy(value: float) -> void:
 func update_atm_moon_mie_anisotropy() -> void:
 	if !is_scene_built:
 		return
-	var partial = ScatterLib.get_partial_mie_phase(atm_moon_mie_anisotropy)
+	var partial: Vector3 = ScatterLib.get_partial_mie_phase(atm_moon_mie_anisotropy)
 	sky_material.set_shader_parameter(Sky3D.ATM_MOON_PARTIAL_MIE_PHASE_P, partial)
 
 
@@ -715,7 +715,7 @@ func set_sun_light_energy(value: float) -> void:
 func update_sun_light_energy() -> void:
 	if __sun_light_node != null:
 		# Light energy should depend on how much of the sun disk is visible.
-		var y = sun_direction().y
+		var y: float = sun_direction().y
 		var sun_light_factor: float = TOD_Math.saturate((y + sun_disk_size) / (2 * sun_disk_size));
 		__sun_light_node.light_energy = TOD_Math.lerp_f(0.0, sun_light_energy, sun_light_factor)
 
@@ -766,7 +766,7 @@ func update_moon_light_energy() -> void:
 	var l: float = TOD_Math.lerp_f(0.0, moon_light_energy, __moon_light_altitude_mult)
 	l*= atm_moon_phases_mult()
 	
-	var fade = (1.0 - sun_direction().y) * 0.5
+	var fade: float = (1.0 - sun_direction().y) * 0.5
 	__moon_light_node.light_energy = l * Sky3D._sun_moon_curve_fade.sample_baked(fade)
 
 
@@ -1216,7 +1216,7 @@ func set_clouds_cumulus_mie_anisotropy(value: float) -> void:
 func update_clouds_cumulus_mie_anisotropy() -> void:
 	if !is_scene_built:
 		return
-	var partial = ScatterLib.get_partial_mie_phase(clouds_cumulus_mie_anisotropy)
+	var partial: Vector3 = ScatterLib.get_partial_mie_phase(clouds_cumulus_mie_anisotropy)
 	clouds_cumulus_material.set_shader_parameter(Sky3D.CUMULUS_CLOUDS_PARTIAL_MIE_PHASE, partial)
 
 
@@ -1290,8 +1290,8 @@ func set_environment(value: Environment) -> void:
 func __update_environment() -> void:
 	if not __enable_environment or not __sun_light_node:
 		return
-	var factor = TOD_Math.saturate(-sun_direction().y + 0.60)
-	var col = TOD_Math.plerp_color(__sun_light_node.light_color, atm_night_tint * atm_night_intensity(), factor)
+	var factor: float = TOD_Math.saturate(-sun_direction().y + 0.60)
+	var col: Color = TOD_Math.plerp_color(__sun_light_node.light_color, atm_night_tint * atm_night_intensity(), factor)
 	col.a = 1.
 	col.v = clamp(col.v, .35, 1.)
 	environment.ambient_light_color = col

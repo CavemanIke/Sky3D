@@ -14,23 +14,23 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_v8wrf"]
 shader = ExtResource("4_v8wrf")
-shader_parameter/_color_correction_params = Vector2(0.889, 1.45519e-11)
+shader_parameter/_color_correction_params = Vector2(0, 1)
 shader_parameter/_ground_color = Color(0.3, 0.3, 0.3, 1)
 shader_parameter/_horizon_level = 0.0
 shader_parameter/_moon_size = 0.07
-shader_parameter/_moon_matrix = Basis(1.49012e-08, -0.942621, 0.333865, -0.547824, 0.279309, 0.78859, -0.836593, -0.182899, -0.516391)
-shader_parameter/_deep_space_matrix = Basis(0.707557, 0.706656, 0, 0.194781, -0.19503, -0.961261, -0.679281, 0.680148, -0.275638)
+shader_parameter/_moon_matrix = Basis(1.49012e-08, -0.314801, -0.949158, -0.785868, -0.586954, 0.194671, -0.618394, 0.745913, -0.247392)
+shader_parameter/_deep_space_matrix = Basis(0.931564, -0.363577, 0, -0.100216, -0.256775, -0.961262, 0.349492, 0.895477, -0.275638)
 shader_parameter/_atm_darkness = 0.5
 shader_parameter/_atm_sun_intensity = 18.0
 shader_parameter/_atm_day_tint = Color(0.807843, 0.909804, 1, 1)
 shader_parameter/_atm_horizon_light_tint = Color(0.980392, 0.635294, 0.462745, 1)
-shader_parameter/_atm_night_tint = Color(0, 0, 0, 0)
+shader_parameter/_atm_night_tint = Color(0.146585, 0.173857, 0.218174, 0.869287)
 shader_parameter/_atm_level_params = Vector3(1, 0, 0)
 shader_parameter/_atm_thickness = 0.7
 shader_parameter/_atm_sun_mie_tint = Color(1, 1, 1, 1)
 shader_parameter/_atm_sun_mie_intensity = 1.0
 shader_parameter/_atm_moon_mie_tint = Color(0.137255, 0.184314, 0.292196, 1)
-shader_parameter/_atm_moon_mie_intensity = 0.0
+shader_parameter/_atm_moon_mie_intensity = 0.608496
 shader_parameter/_atm_beta_ray = Vector3(5.80454e-06, 1.35629e-05, 3.31126e-05)
 shader_parameter/_atm_beta_mie = Vector3(3.038e-08, 3.038e-08, 3.038e-08)
 shader_parameter/_atm_sun_partial_mie_phase = Vector3(0.36, 1.64, 1.6)
@@ -83,7 +83,8 @@ sky_material = SubResource("ShaderMaterial_v8wrf")
 background_mode = 2
 sky = SubResource("Sky_0j4pb")
 ambient_light_source = 3
-ambient_light_color = Color(0.79118, 0.714589, 0.676209, 1)
+ambient_light_color = Color(0.235156, 0.278907, 0.35, 1)
+ambient_light_sky_contribution = 0.7
 reflected_light_source = 2
 tonemap_mode = 3
 tonemap_white = 6.0
@@ -111,29 +112,29 @@ environment = SubResource("Environment_1g8sw")
 camera_attributes = SubResource("CameraAttributesPractical_d0ed4")
 script = ExtResource("2_cejat")
 enable_editor_time = false
-current_time = 8.15683
+current_time = 3.75
 metadata/_custom_type_script = "uid://deo0gxkmk2ahd"
 
 [node name="SunLight" type="DirectionalLight3D" parent="Sky3D"]
-transform = Transform3D(0, -0.653722, 0.756735, 0.797351, 0.456702, 0.394532, -0.603516, 0.603383, 0.521246, 0.756735, 0.394532, 0.521246)
-light_color = Color(0.995781, 0.899383, 0.851079, 1)
+transform = Transform3D(0, -0.619806, 0.784755, 0.395439, -0.720792, -0.569287, 0.918492, 0.310323, 0.245095, 0.784755, -0.569287, 0.245095)
+light_color = Color(0.98, 0.523, 0.294, 1)
+light_energy = 0.0
 shadow_enabled = true
 
 [node name="MoonLight" type="DirectionalLight3D" parent="Sky3D"]
-transform = Transform3D(0, -0.547827, -0.836592, -0.942621, 0.279307, -0.182899, 0.333863, 0.788589, -0.516394, -0.836592, -0.182899, -0.516394)
+transform = Transform3D(0, -0.785868, -0.618394, -0.314801, -0.586953, 0.745913, -0.949158, 0.194671, -0.247392, -0.618394, 0.745913, -0.247392)
 light_color = Color(0.572549, 0.776471, 0.956863, 1)
-light_energy = 0.0
+light_energy = 0.194524
 shadow_enabled = true
 
 [node name="Skydome" type="Node" parent="Sky3D"]
 script = ExtResource("4")
-tonemap_level = 0.889
-exposure = 1.45519e-11
-sun_azimuth = -124.559
-sun_altitude = -66.7632
-moon_azimuth = -301.685
-moon_altitude = -100.539
-deep_space_euler = Vector3(1.29154, 3.14159, 2.35755)
+exposure = 1.0
+sun_azimuth = -107.345
+sun_altitude = -124.7
+moon_azimuth = -291.804
+moon_altitude = -41.7624
+deep_space_euler = Vector3(1.29154, 3.14159, -2.79574)
 
 [node name="TimeOfDay" type="Node" parent="Sky3D"]
 script = ExtResource("3")
@@ -141,7 +142,7 @@ update_in_editor = false
 dome_path = NodePath("../Skydome")
 system_sync = false
 total_cycle_in_minutes = 15.0
-total_hours = 8.15683
+total_hours = 3.75
 day = 1
 month = 1
 year = 2025

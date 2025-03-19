@@ -330,7 +330,7 @@ func set_auto_exposure_speed(value: float) -> void:
 
 
 ## Maximum strength of Moon DirectionalLight, visible at night.
-@export_range(0, 16, 0.005) var moon_energy: float = .3: set = set_moon_energy
+@export_range(0, 16, 0.005) var moon_energy: float = 0.3: set = set_moon_energy
 
 func set_moon_energy(value: float) -> void:
 	moon_energy = value
@@ -356,7 +356,7 @@ func set_night_ambient(value: bool) -> void:
 
 
 ## Strength of ambient light at night. Sky_contribution must be < 1. See Environment.ambient_light_energy.
-@export_range(0, 1, 0.005) var night_ambient_min: float = .7: set = set_night_ambient_min
+@export_range(0, 1, 0.005) var night_ambient_min: float = 0.7: set = set_night_ambient_min
 
 func set_night_ambient_min(value: float) -> void:
 	night_ambient_min = value
@@ -365,7 +365,7 @@ func set_night_ambient_min(value: float) -> void:
 
 
 ## Transition time for ambient light change, typically transitioning between day and night.
-@export_range(0, 30, 0.05) var ambient_tween_time: float = 3.: set = set_ambient_tween_time
+@export_range(0, 30, 0.05) var ambient_tween_time: float = 3.0: set = set_ambient_tween_time
 
 func set_ambient_tween_time(value: float) -> void:
 	ambient_tween_time = value
