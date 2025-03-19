@@ -52,7 +52,6 @@ func set_sky_enabled(value: bool) -> void:
 	sky_enabled = value
 	if not sky:
 		return
-	#sky.sky_visible = value
 	sky.clouds_cumulus_visible = clouds_enabled and value
 
 
@@ -465,12 +464,6 @@ func _set(property: StringName, value: Variant) -> bool:
 #####################
 ## Constants
 #####################
-
-# Node names
-#const SKY_INSTANCE: String = "_SkyMeshI"
-#const FOG_INSTANCE: String = "_FogMeshI"
-#const MOON_INSTANCE: String = "MoonRender"
-#const CLOUDS_C_INSTANCE: String = "_CloudsCumulusI"
 
 # Shaders
 const _new_sky_shader: Shader = preload("res://addons/sky_3d/shaders/SkyMaterial.gdshader")
