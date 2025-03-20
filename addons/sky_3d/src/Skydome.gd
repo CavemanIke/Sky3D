@@ -16,7 +16,7 @@ var is_scene_built: bool
 
 var moon_render: Node
 
-var sky_material: Material
+var sky_material: ShaderMaterial
 var moon_material: Material
 var clouds_cumulus_material: Material
 var fog_material: Material
@@ -61,6 +61,7 @@ func _ready() -> void:
 	update_moon_color()
 	update_moon_light_path()
 	update_moon_size()
+	update_moon_texture()
 
 	# Near space lighting
 	update_sun_light_color()
@@ -90,7 +91,6 @@ func _ready() -> void:
 	update_clouds_texture()
 	
 	# Clouds cumulus
-	update_clouds_cumulus_visible()
 	update_clouds_cumulus_day_color()
 	update_clouds_cumulus_horizon_light_color()
 	update_clouds_cumulus_night_color()
@@ -909,6 +909,7 @@ func set_stars_scintillation_speed(value: float) -> void:
 #####################
 
 @export_group("2D Clouds")
+@export var clouds_visible: bool = true: set = set_clouds_visible
 @export var clouds_thickness: float = 1.7: set = set_clouds_thickness
 @export_range(0.0, 1.0, 0.001) var clouds_coverage: float = 0.5: set = set_clouds_coverage
 @export var clouds_absorption: float = 2.0: set = set_clouds_absorption
@@ -919,6 +920,12 @@ func set_stars_scintillation_speed(value: float) -> void:
 @export var clouds_direction: Vector2 = Vector2(0.25, 0.25): set = set_clouds_direction
 @export var clouds_speed: float = 0.07: set = set_clouds_speed
 @export var clouds_texture: Texture2D = Sky3D._clouds_texture: set = _set_clouds_texture
+
+func set_clouds_visible(value: bool) -> void:
+	if value == clouds_visible:
+		return
+	clouds_visible = value
+	sky_material.set_shader_parameter(Sky3D.CLOUDS_VISIBLE, value)
 
 func set_clouds_thickness(value: float) -> void:
 	if value == clouds_thickness:
@@ -1071,20 +1078,13 @@ func update_clouds_texture() -> void:
 @export var clouds_cumulus_speed: float = 0.05: set = set_clouds_cumulus_speed
 @export var clouds_cumulus_texture: Texture2D = Sky3D._clouds_cumulus_texture: set = _set_clouds_cumulus_texture
 
-# DEPRECATED: This only applied to the physical cumulus cloud skydome that was instantiated.
-# TODO: Modify this to toggle the cumulus clouds separately in the sky material instead.
+
 func set_clouds_cumulus_visible(value: bool) -> void:
 	if value == clouds_cumulus_visible:
 		return
 	clouds_cumulus_visible = value
-	clouds_cumulus_thickness = float(value) * 0.0243
-	update_clouds_cumulus_visible()
+	sky_material.set_shader_parameter(Sky3D.CUMULUS_CLOUDS_VISIBLE, value)
 	
-
-func update_clouds_cumulus_visible() -> void:
-	if !is_scene_built:
-		return
-
 
 func set_clouds_cumulus_day_color(value: Color) -> void:
 	if value == clouds_cumulus_day_color:

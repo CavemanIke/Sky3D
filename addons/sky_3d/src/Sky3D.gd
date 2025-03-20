@@ -52,7 +52,9 @@ func set_sky_enabled(value: bool) -> void:
 	sky_enabled = value
 	if not sky:
 		return
+	sky_material.set_shader_parameter(Sky3D.SKY_VISIBLE, value)
 	sky.clouds_cumulus_visible = clouds_enabled and value
+	sky.clouds_visible = clouds_enabled and value
 
 
 ## Enables the Sun and Moon DirectionalLights.
@@ -74,8 +76,7 @@ func set_clouds_enabled(value: bool) -> void:
 	if not sky:
 		return
 	sky.clouds_cumulus_visible = value
-	sky.clouds_cumulus_thickness = float(value) * 0.0243
-	sky.clouds_thickness = float(value) * 1.7
+	sky.clouds_visible = value
 
 
 ## Disables rendering of sky, fog, and lights
@@ -255,6 +256,14 @@ func set_sun_shadow_opacity(value: float) -> void:
 	sun_shadow_opacity = value
 	if sun:
 		sun.shadow_opacity = value
+		
+@export_range(0,128,.005) var reflected_energy: float = 1.0: set = set_reflected_energy
+
+func set_reflected_energy(value: float) -> void:
+	if environment:
+		reflected_energy = value
+		if environment.sky:
+			sky_material.set_shader_parameter(Sky3D.REFLECTED_ENERGY, value)
 		
 
 ## Ratio of ambient light to sky light. See Environment.ambient_light_sky_contribution.
@@ -481,11 +490,13 @@ const _clouds_cumulus_texture: Texture2D = preload("res://addons/sky_3d/assets/t
 const MOON_MATRIX: String = "_moon_matrix"
 
 # General
+const SKY_VISIBLE: String = "_sky_visible"
 const TEXTURE_P: String = "_texture"
 const COLOR_CORRECTION_P: String = "_color_correction_params"
 const GROUND_COLOR_P: String = "_ground_color"
 const NOISE_TEX: String = "_noise_tex"
 const HORIZON_LEVEL: String = "_horizon_level"
+const REFLECTED_ENERGY: String = "_reflected_energy"
 
 # Atmosphere
 const ATM_DARKNESS_P: String = "_atm_darkness"
@@ -525,6 +536,7 @@ const STARS_SC_P: String = "_stars_scintillation"
 const STARS_SC_SPEED_P: String = "_stars_scintillation_speed"
 
 # Clouds
+const CLOUDS_VISIBLE: String = "_clouds_visible"
 const CLOUDS_THICKNESS: String = "_clouds_thickness"
 const CLOUDS_COVERAGE: String = "_clouds_coverage"
 const CLOUDS_ABSORPTION: String = "_clouds_absorption"
@@ -545,6 +557,7 @@ const CLOUDS_MIE_INTENSITY: String = "_clouds_mie_intensity"
 const CLOUDS_PARTIAL_MIE_PHASE: String = "_clouds_partial_mie_phase"
 
 # Cumulus Clouds
+const CUMULUS_CLOUDS_VISIBLE: String = "_cumulus_clouds_visible"
 const CUMULUS_CLOUDS_THICKNESS: String = "_cumulus_clouds_thickness"
 const CUMULUS_CLOUDS_COVERAGE: String = "_cumulus_clouds_coverage"
 const CUMULUS_CLOUDS_ABSORPTION: String = "_cumulus_clouds_absorption"
