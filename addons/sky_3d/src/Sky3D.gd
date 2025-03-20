@@ -66,6 +66,15 @@ func set_lights_enabled(value: bool) -> void:
 		return
 	sky.__sun_light_node.visible = value
 	sky.__moon_light_node.visible = value
+	
+
+## Enables the screen space fog shader.
+@export var fog_enabled: bool = true : set = set_fog_enabled
+
+func set_fog_enabled(value: bool) -> void:
+	fog_enabled = value
+	if sky:
+		sky.fog_visible = value
 
 
 ## Enables the 2D and cumulus cloud layers.
@@ -474,8 +483,12 @@ func _set(property: StringName, value: Variant) -> bool:
 ## Constants
 #####################
 
+# Node Names
+const FOG_INSTANCE:= "_FogMeshI"
+
 # Shaders
 const _new_sky_shader: Shader = preload("res://addons/sky_3d/shaders/SkyMaterial.gdshader")
+const _fog_shader: Shader = preload("res://addons/sky_3d/shaders/AtmFog.gdshader")
 
 # Textures
 const _moon_texture: Texture2D = preload("res://addons/sky_3d/assets/thirdparty/textures/moon/MoonMap.png")
@@ -487,6 +500,8 @@ const _clouds_texture: Texture2D = preload("res://addons/sky_3d/assets/resources
 const _clouds_cumulus_texture: Texture2D = preload("res://addons/sky_3d/assets/textures/noiseClouds.png")
 
 # Coords
+const SUN_DIR_P:= "_sun_direction"
+const MOON_DIR_P:= "_moon_direction"
 const MOON_MATRIX: String = "_moon_matrix"
 
 # General
@@ -517,6 +532,14 @@ const ATM_SUN_PARTIAL_MIE_PHASE_P: String = "_atm_sun_partial_mie_phase"
 const ATM_MOON_MIE_TINT_P: String = "_atm_moon_mie_tint"
 const ATM_MOON_MIE_INTENSITY_P: String = "_atm_moon_mie_intensity"
 const ATM_MOON_PARTIAL_MIE_PHASE_P: String = "_atm_moon_partial_mie_phase"
+
+# Fog
+const ATM_FOG_DENSITY_P:= "_fog_density"
+const ATM_FOG_RAYLEIGH_DEPTH_P:= "_fog_rayleigh_depth"
+const ATM_FOG_MIE_DEPTH_P:= "_fog_mie_depth"
+const ATM_FOG_FALLOFF:= "_fog_falloff"
+const ATM_FOG_START:= "_fog_start"
+const ATM_FOG_END:= "_fog_end"
 
 # Near Space
 const SUN_DISK_COLOR_P: String = "_sun_disk_color"
