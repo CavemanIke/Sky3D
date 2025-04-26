@@ -14,6 +14,9 @@ extends WorldEnvironment
 ## Emitted when the environment variable has changed.
 signal environment_changed
 
+@export_custom(PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY) 
+var version: String = "2.1-dev"
+
 ## The Sun DirectionalLight.
 var sun: DirectionalLight3D
 ## The Moon DirectionalLight.

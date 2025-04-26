@@ -228,8 +228,8 @@ func update_horizon_level() -> void:
 @export_node_path("DirectionalLight3D") var sun_light_path: NodePath = NodePath("../SunLight"): set = set_sun_light_path
 @export var sun_light_energy: float = 1.0: set = set_sun_light_energy
 @export var sun_disk_color: Color = Color(0.996094, 0.541334, 0.140076): set = set_sun_disk_color
-@export_range(0.0, 100.0) var sun_disk_intensity: float = 2.0: set = set_sun_disk_intensity
-@export_range(0.0, 0.5, 0.001) var sun_disk_size: float = 0.015: set = set_sun_disk_size
+@export_range(0.0, 100.0) var sun_disk_intensity: float = 30.0: set = set_sun_disk_intensity
+@export_range(0.0, 0.5, 0.001) var sun_disk_size: float = 0.02: set = set_sun_disk_size
 @export var sun_light_color: Color = Color.WHITE : set = set_sun_light_color 
 @export var sun_horizon_light_color: Color = Color(.98, 0.523, 0.294, 1.0): set = set_sun_horizon_light_color
 @export_range(-180.0, 180.0, 0.00001) var sun_azimuth: float = 0.0: set = set_sun_azimuth
@@ -990,7 +990,7 @@ func update_moon_light_path() -> void:
 #####################
 
 @export_group("Deep Space")
-@export var deep_space_euler: Vector3 = Vector3(-0.752, 2.56, 0.0): set = set_deep_space_euler
+@export var deep_space_euler: Vector3 = Vector3(0, 0, 0.0): set = set_deep_space_euler
 @export var background_color: Color = Color(0.709804, 0.709804, 0.709804, 0.854902): set = set_background_color
 @export var background_texture: Texture2D = Sky3D._background_texture: set = _set_background_texture
 @export var stars_field_color: Color = Color.WHITE: set = set_stars_field_color
