@@ -25,7 +25,7 @@ var moon: DirectionalLight3D
 var tod: TimeOfDay
 ## The Skydome node.
 var sky: Skydome
-
+## The Sky shader.
 var sky_material: ShaderMaterial
 
 ## Enables all rendering and time tracking.
@@ -53,7 +53,7 @@ func set_sky3d_enabled(value: bool) -> void:
 
 func set_sky_enabled(value: bool) -> void:
 	sky_enabled = value
-	if not sky:
+	if not sky or not sky_material:
 		return
 	sky_material.set_shader_parameter(Sky3D.SKY_VISIBLE, value)
 	sky.clouds_cumulus_visible = clouds_enabled and value
@@ -274,7 +274,7 @@ func set_sun_shadow_opacity(value: float) -> void:
 func set_reflected_energy(value: float) -> void:
 	if environment:
 		reflected_energy = value
-		if environment.sky:
+		if sky_material:
 			sky_material.set_shader_parameter(Sky3D.REFLECTED_ENERGY, value)
 		
 
@@ -408,9 +408,6 @@ func _initialize() -> void:
 	if environment == null:
 		environment = Environment.new()
 		environment.background_mode = Environment.BG_SKY
-		environment.sky = Sky.new()
-		environment.sky.sky_material = ShaderMaterial.new()
-		environment.sky.sky_material.shader = _new_sky_shader
 		environment.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
 		environment.ambient_light_sky_contribution = 0.7
 		environment.ambient_light_energy = 1.0
@@ -419,9 +416,14 @@ func _initialize() -> void:
 		environment.tonemap_white = 6
 		emit_signal("environment_changed", environment)
 
+	# Setup Sky material & Upgrade old
+	if environment.sky == null or environment.sky.sky_material is PhysicalSkyMaterial:
+		environment.sky = Sky.new()
+		environment.sky.sky_material = ShaderMaterial.new()
+		environment.sky.sky_material.shader = _new_sky_shader
+		
 	# Set a reference to the sky material for easy access.
-	if environment:
-		sky_material = environment.sky.sky_material
+	sky_material = environment.sky.sky_material
 		
 	# Create default camera attributes
 	if camera_attributes == null:
