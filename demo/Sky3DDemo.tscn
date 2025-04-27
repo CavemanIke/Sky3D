@@ -77,11 +77,13 @@ shader_parameter/_cumulus_clouds_horizon_light_color = Color(0.98, 0.43, 0.15, 1
 shader_parameter/_cumulus_clouds_night_color = Color(0.090196, 0.094118, 0.129412, 1)
 shader_parameter/_cumulus_clouds_partial_mie_phase = Vector3(0.957564, 1.04244, 0.412)
 shader_parameter/_cumulus_clouds_mie_intensity = 1.0
-shader_parameter/_moon_matrix = Basis(-7.45058e-09, -0.987234, -0.159276, -0.470221, -0.140569, 0.871282, -0.882548, 0.074895, -0.464219)
+shader_parameter/_moon_matrix = Basis(0, -0.989426, -0.145041, -0.51637, -0.124208, 0.84731, -0.856366, 0.074895, -0.51091)
 shader_parameter/_deep_space_matrix = Basis(0.886499, 0.462731, -2.4097e-08, 0.127546, -0.244353, -0.961262, -0.444806, 0.852157, -0.275638)
+shader_parameter/_time = 30.007
 
 [sub_resource type="Sky" id="Sky_0j4pb"]
 sky_material = SubResource("ShaderMaterial_v8wrf")
+process_mode = 3
 
 [sub_resource type="Environment" id="Environment_1g8sw"]
 background_mode = 2
@@ -106,7 +108,7 @@ far = 8192.0
 [node name="ReflectionProbe" type="ReflectionProbe" parent="."]
 update_mode = 1
 size = Vector3(2000, 2000, 2000)
-cull_mask = 4
+cull_mask = 5
 
 [node name="Sky3D" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_1g8sw")
