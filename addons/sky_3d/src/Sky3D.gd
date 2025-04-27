@@ -520,6 +520,7 @@ const GROUND_COLOR_P: String = "_ground_color"
 const NOISE_TEX: String = "_noise_tex"
 const HORIZON_LEVEL: String = "_horizon_level"
 const REFLECTED_ENERGY: String = "_reflected_energy"
+const SKY_TIME: String = "_time"
 
 # Atmosphere
 const ATM_DARKNESS_P: String = "_atm_darkness"

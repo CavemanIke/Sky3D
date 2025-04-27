@@ -101,6 +101,9 @@ group_uniforms Transform_Matrices;
 uniform mat3 _moon_matrix; // Set externally via GDScript.
 uniform mat3 _deep_space_matrix; // Set externally via GDScript for star map rotation.
 
+group_uniforms Miscellaneous;
+uniform float _time; // For updating/pausing cloud movement and to work around TIME not working in Compatibility Renderer.
+
 
 const int kCUMULUS_CLOUDS_STEP = 10;
 const float k3PI8 = 3.0 / (8.0 * PI);
@@ -265,7 +268,7 @@ vec3 atmosphericScattering(float sr, float sm, vec2 mu, vec3 mult) {
 // Clouds
 //------------------------------------------------------------------------------
 float noiseClouds(vec2 coords, vec2 offset) {
-	float speed = TIME * _clouds_speed * .5; // .5 matches cumulus clouds
+	float speed = _time * _clouds_speed * .5; // .5 matches cumulus clouds
 	vec2 wind = offset * speed;
 	vec2 wind2 = (offset + offset) * speed;
 	float a = textureLod(_clouds_texture, coords.xy * _clouds_uv - wind, 0.0).r;
@@ -416,7 +419,7 @@ vec3 render_sky(vec3 worldPos, vec3 cloudsPos, vec3 sunPosition, vec3 moonPositi
 	deepSpace.rgb += deepSpaceBackground.rgb * moonMask + moon_output;
 
 	// Stars Field
-	float starsScintillation = textureLod(_noise_tex, deepSpaceUV + (TIME * _stars_scintillation_speed), 0.0).r;
+	float starsScintillation = textureLod(_noise_tex, deepSpaceUV + (_time * _stars_scintillation_speed), 0.0).r;
 	starsScintillation = mix(1.0, starsScintillation * 1.5, _stars_scintillation);
 
 	vec3 starsField = textureLod(_stars_field_texture, deepSpaceUV, 0.0).rgb * _stars_field_color.rgb;
@@ -438,7 +441,7 @@ vec3 render_sky(vec3 worldPos, vec3 cloudsPos, vec3 sunPosition, vec3 moonPositi
 	}
 	
 	if (_cumulus_clouds_visible) {
-		vec4 cumulusClouds = renderCloudsCumulus(vec3(0.0), cloudsPos, TIME, angle_mult.z, sunPosition, moonPosition);
+		vec4 cumulusClouds = renderCloudsCumulus(vec3(0.0), cloudsPos, _time, angle_mult.z, sunPosition, moonPosition);
 		cumulusClouds.a = saturate(cumulusClouds.a);
 		cumulusClouds.rgb *= mix(mix(_cumulus_clouds_day_color.rgb, _cumulus_clouds_horizon_light_color.rgb, angle_mult.x), 
 			_cumulus_clouds_night_color.rgb, angle_mult.w);
