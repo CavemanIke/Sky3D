@@ -13,6 +13,7 @@ signal year_changed(value)
 
 var _update_timer: Timer
 var _last_update: int = 0
+var _is_compatibility_mode: bool = false
 
 
 @export var update_in_game: bool = true :
@@ -44,6 +45,8 @@ var _last_update: int = 0
 
 
 func _init() -> void:
+	_is_compatibility_mode = RenderingServer.get_current_rendering_method() == "gl_compatibility"
+		
 	set_total_hours(total_hours)
 	set_day(day)
 	set_month(month)
@@ -357,8 +360,10 @@ func __update_celestial_coords() -> void:
 				var x: Quaternion = Quaternion.from_euler(Vector3( (90 + latitude) * TOD_Math.DEG_TO_RAD, 0.0, 0.0) )
 				var y: Quaternion = Quaternion.from_euler(Vector3(0.0, 0.0,  (180.0 - __local_sideral_time * TOD_Math.RAD_TO_DEG) * TOD_Math.DEG_TO_RAD)) 
 				__dome.deep_space_quat = x * y
-				
-	__dome.sky_material.set_shader_parameter(Sky3D.SKY_TIME, _last_update / 1000.0)
+	
+	if _is_compatibility_mode:
+		__dome.sky_material.set_shader_parameter(Sky3D.SKY_TIME, _last_update / 1000.0)
+	__dome.update_moon_coords()
 
 
 func __compute_simple_sun_coords() -> void:
