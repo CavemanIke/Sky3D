@@ -363,6 +363,7 @@ func __update_celestial_coords() -> void:
 	
 	if _is_compatibility_mode:
 		__dome.sky_material.set_shader_parameter(Sky3D.SKY_TIME, _last_update / 1000.0)
+	__dome.update_moon_coords()
 
 
 func __compute_simple_sun_coords() -> void:
