@@ -58,9 +58,22 @@ uniform vec4 _background_color: source_color = vec4(0.71, 0.71, 0.71, 0.855);
 group_uniforms Starfield;
 uniform vec4 _stars_field_color: source_color = vec4(1.0);
 uniform sampler2D _stars_field_texture: source_color;
+uniform vec3 _sky_alignment = vec3(2.6555, -0.23935, 0.4505);
+uniform float _sky_rotation = 0.0; // For simulating Earth rotation.
+uniform float _sky_tilt = 0.0; // For tilting the sky according to observer latitude in radians. (90° - latitude)
 uniform float _stars_scintillation = 0.75;
 uniform float _stars_scintillation_speed = 0.01;
 uniform sampler2D _noise_tex: source_color;
+
+/* Sky alignment values for a star map that is in galactic coordinates. Works for most star maps.
+X: 2.6555
+Y: -0.23935
+Z: 0.4505
+
+These alignment values are consistent with a sky view from the North Pole (latitude zero)
+at midnight. The positions of Polaris, Vega, Rigel, and Alpha Centauri confirmed
+through various sources and calculations.
+*/
 
 // Clouds
 group_uniforms Clouds;
@@ -136,11 +149,36 @@ vec3 tonemapPhoto(vec3 color, float exposure, float level){
 }
 
 
+// Provides a transformation matrix when passed a vec3.
+mat3 rotationMatrix(vec3 r) {
+    float c1 = cos(r.x), s1 = sin(r.x);
+    float c2 = cos(r.y), s2 = sin(r.y);
+    float c3 = cos(r.z), s3 = sin(r.z);
+
+    mat3 rotX = mat3(
+        vec3(1.0, 0.0, 0.0),
+        vec3(0.0, c1, -s1),
+        vec3(0.0, s1, c1)
+    );
+
+    mat3 rotY = mat3(
+        vec3(c2, 0.0, s2),
+        vec3(0.0, 1.0, 0.0),
+        vec3(-s2, 0.0, c2)
+    );
+
+    mat3 rotZ = mat3(
+        vec3(c3, -s3, 0.0),
+        vec3(s3, c3, 0.0),
+        vec3(0.0, 0.0, 1.0)
+    );
+
+    return rotZ * rotY * rotX; // Combine rotations in ZYX order
+}
+
+
 vec2 equirectUV(vec3 norm) {
-	vec2 ret;
-	ret.x = (atan(norm.x, norm.z) + PI) * (1.0 / TAU);
-	ret.y = acos(norm.y) * (1.0/PI);
-	return ret;
+	return vec2((atan(norm.y, norm.x) + PI) / TAU, acos(norm.z) / -PI);
 }
 
 
@@ -415,7 +453,21 @@ vec3 render_sky(vec3 worldPos, vec3 cloudsPos, vec3 sunPosition, vec3 moonPositi
 	float moonMask = (1.0 - moon_mask);
 
 	vec3 deepSpace = vec3(0.0);
-	vec2 deepSpaceUV = equirectUV(normalize(deep_space_coords));
+	
+	// Tilt the sky along the X-axis.
+	mat3 tilt = rotationMatrix(vec3(_sky_tilt, 0.0, 0.0));
+
+    // Rotation around Y-axis. For simulating Earth's rotation.
+    mat3 rotation = rotationMatrix(vec3(0.0, _sky_rotation, 0.0));
+
+    // Initial XYZ rotation for alignment.
+    mat3 alignment_xyz = rotationMatrix(_sky_alignment);
+
+	// Combine everything together to get the desired alignment.
+	vec3 final_alignment = normalize(alignment_xyz * rotation * tilt * worldPos);
+	
+	// Now generate UV coordinates for the texture.
+	vec2 deepSpaceUV = equirectUV(normalize(final_alignment));
 
 	// Background
 	vec3 deepSpaceBackground = textureLod(_background_texture, deepSpaceUV, 0.0).rgb;
@@ -427,7 +479,7 @@ vec3 render_sky(vec3 worldPos, vec3 cloudsPos, vec3 sunPosition, vec3 moonPositi
 	float starsScintillation = textureLod(_noise_tex, deepSpaceUV + (time * _stars_scintillation_speed), 0.0).r;
 	starsScintillation = mix(1.0, starsScintillation * 1.5, _stars_scintillation);
 
-	vec3 starsField = textureLod(_stars_field_texture, deepSpaceUV, 0.0).rgb * _stars_field_color.rgb;
+	vec3 starsField = textureLod(_stars_field_texture, deepSpaceUV, 0.0).rgb;// * _stars_field_color.rgb;
 	starsField = saturateRGB(mix(starsField.rgb, starsField.rgb * starsScintillation, _stars_scintillation));
 	starsField = saturateRGB(starsField.rgb);
 	//deepSpace.rgb -= saturate(starsField.r * 10.0);

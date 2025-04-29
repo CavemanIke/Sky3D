@@ -560,6 +560,9 @@ const MOON_TEXTURE_P: String = "_moon_texture"
 
 # Deep Space
 const DEEP_SPACE_MATRIX_P: String = "_deep_space_matrix"
+const SKY_ALIGNMENT: String = "_sky_alignment"
+const SKY_ROTATION: String = "_sky_rotation"
+const SKY_TILT: String = "_sky_tilt"
 const BG_COL_P: String = "_background_color"
 const BG_TEXTURE_P: String = "_background_texture"
 const STARS_COLOR_P: String = "_stars_field_color"

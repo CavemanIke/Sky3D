@@ -346,6 +346,7 @@ func __update_celestial_coords() -> void:
 				var x: Quaternion = Quaternion.from_euler(Vector3( (90 + latitude) * TOD_Math.DEG_TO_RAD, 0.0, 0.0))
 				var y: Quaternion = Quaternion.from_euler(Vector3(0.0, 0.0, __sun_coords.y * TOD_Math.DEG_TO_RAD))
 				__dome.deep_space_quat = x * y
+				__dome.sky_material.set_shader_parameter(Sky3D.SKY_TILT, deg_to_rad(90 - latitude))
 		
 		CelestialCalculationsMode.Realistic:
 			__compute_realistic_sun_coords()
@@ -360,10 +361,12 @@ func __update_celestial_coords() -> void:
 				var x: Quaternion = Quaternion.from_euler(Vector3( (90 + latitude) * TOD_Math.DEG_TO_RAD, 0.0, 0.0) )
 				var y: Quaternion = Quaternion.from_euler(Vector3(0.0, 0.0,  (180.0 - __local_sideral_time * TOD_Math.RAD_TO_DEG) * TOD_Math.DEG_TO_RAD)) 
 				__dome.deep_space_quat = x * y
-	
+				__dome.sky_material.set_shader_parameter(Sky3D.SKY_TILT, deg_to_rad(90 - latitude))
+				__dome.sky_material.set_shader_parameter(Sky3D.SKY_ROTATION, __local_sideral_time)
+				
+	__dome.update_moon_coords()
 	if _is_compatibility_mode:
 		__dome.sky_material.set_shader_parameter(Sky3D.SKY_TIME, _last_update / 1000.0)
-	__dome.update_moon_coords()
 
 
 func __compute_simple_sun_coords() -> void:
