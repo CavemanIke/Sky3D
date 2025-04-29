@@ -990,7 +990,8 @@ func update_moon_light_path() -> void:
 #####################
 
 @export_group("Deep Space")
-@export var deep_space_euler: Vector3 = Vector3(0, 0, 0.0): set = set_deep_space_euler
+var deep_space_euler: Vector3 = Vector3(0, 0, 0.0): set = set_deep_space_euler # DEPRECATED
+@export var starmap_alignment: Vector3 = Vector3(2.6555, -0.23935, 0.4505): set = set_starmap_alignment # Default values work for most star maps in galactic coordinate format.
 @export var background_color: Color = Color(0.709804, 0.709804, 0.709804, 0.854902): set = set_background_color
 @export var background_texture: Texture2D = Sky3D._background_texture: set = _set_background_texture
 @export var stars_field_color: Color = Color.WHITE: set = set_stars_field_color
@@ -1000,6 +1001,12 @@ func update_moon_light_path() -> void:
 
 var deep_space_quat: Quaternion = Quaternion.IDENTITY: set = set_deep_space_quat
 var __deep_space_basis: Basis
+
+
+func set_starmap_alignment(value: Vector3) -> void:
+	starmap_alignment = value
+	if sky_material:
+		sky_material.set_shader_parameter(Sky3D.SKY_ALIGNMENT, value)
 
 
 func set_deep_space_euler(value: Vector3) -> void:
