@@ -42,6 +42,9 @@ uniform vec3 _atm_sun_partial_mie_phase = vec3(0.36, 1.64, 1.6);
 group_uniforms Moon;
 uniform vec4 _moon_color: source_color = vec4(1.0);
 uniform sampler2D _moon_texture: source_color, repeat_disable;
+uniform vec3 _moon_texture_alignment = vec3(7.0, 1.4, 4.8);
+uniform bool _moon_texture_flip_u;
+uniform bool _moon_texture_flip_v;
 uniform float _moon_size = 0.07;
 
 group_uniforms Moon_Mie_Scattering;
@@ -184,11 +187,23 @@ vec2 equirectUV(vec3 norm) {
 
 vec3 get_moon_texture_equirectUV(vec3 dir)
 {
-    dir = _moon_matrix * dir;
+    dir = _moon_matrix * dir * rotationMatrix(_moon_texture_alignment);
 	dir.x = -dir.x;
 	dir.z = -dir.z;
-    float u = 0.5 + atan(dir.z, dir.x) / (2.0 * 3.141592653589793);  // Longitude
-    float v = 0.5 - asin(dir.y) / 3.141592653589793;                   // Latitude
+	float u = 0.0; // Longitude
+	float v = 0.0; // Latitude
+	if (_moon_texture_flip_u) {
+    	u = 0.5 + atan(dir.z, dir.x) / (2.0 * 3.141592653589793);
+	} else {
+    	u = 0.5 - atan(dir.z, dir.x) / (2.0 * 3.141592653589793);
+	}
+	
+	if (_moon_texture_flip_v) {
+    	v = 0.5 + asin(dir.y) / 3.141592653589793;
+		
+	} else {
+    	v = 0.5 - asin(dir.y) / 3.141592653589793;
+	}
     return texture(_moon_texture, vec2(u, v)).rgb;
 }
 
@@ -449,7 +464,7 @@ vec3 render_sky(vec3 worldPos, vec3 cloudsPos, vec3 sunPosition, vec3 moonPositi
 
 	float moon_ndotl = clamp(dot(moon_normal, sunPosition), 0.0, 1.0);
 	vec3 moon_texture = get_moon_texture_equirectUV(moon_normal);
-	vec3 moon_output = moon_mask * moon_ndotl * exp2(1.0) * moon_texture;
+	vec3 moon_output = moon_mask * moon_ndotl * exp2(1.0) * moon_texture * _moon_color.rgb;
 	float moonMask = (1.0 - moon_mask);
 
 	vec3 deepSpace = vec3(0.0);
@@ -479,7 +494,7 @@ vec3 render_sky(vec3 worldPos, vec3 cloudsPos, vec3 sunPosition, vec3 moonPositi
 	float starsScintillation = textureLod(_noise_tex, deepSpaceUV + (time * _stars_scintillation_speed), 0.0).r;
 	starsScintillation = mix(1.0, starsScintillation * 1.5, _stars_scintillation);
 
-	vec3 starsField = textureLod(_stars_field_texture, deepSpaceUV, 0.0).rgb;// * _stars_field_color.rgb;
+	vec3 starsField = textureLod(_stars_field_texture, deepSpaceUV, 0.0).rgb * _stars_field_color.rgb;
 	starsField = saturateRGB(mix(starsField.rgb, starsField.rgb * starsScintillation, _stars_scintillation));
 	starsField = saturateRGB(starsField.rgb);
 	//deepSpace.rgb -= saturate(starsField.r * 10.0);
