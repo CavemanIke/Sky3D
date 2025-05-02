@@ -298,6 +298,9 @@ func update_sun_coords() -> void:
 
 @export_group("Moon")
 @export var moon_texture: Texture2D = Sky3D._moon_texture: set = set_moon_texture
+@export var moon_texture_alignment: Vector3 = Vector3(7.0, 1.4, 4.8): set = set_moon_texture_alignment
+@export var flip_moon_texture_u: bool = false: set = set_flip_moon_texture_u
+@export var flip_moon_texture_v: bool = false: set = set_flip_moon_texture_v
 @export_node_path("DirectionalLight3D") var moon_light_path: NodePath = NodePath("../MoonLight"): set = set_moon_light_path
 @export var moon_light_energy: float = 0.3: set = set_moon_light_energy
 @export var moon_color: Color = Color.WHITE: set = set_moon_color
@@ -870,10 +873,34 @@ func set_moon_texture(value: Texture2D) -> void:
 	update_moon_texture()
 	
 
+func set_moon_texture_alignment(value: Vector3) -> void:
+	if value == moon_texture_alignment:
+		return
+	moon_texture_alignment = value
+	update_moon_texture()
+	
+	
+func set_flip_moon_texture_u(value: bool) -> void:
+	if value == flip_moon_texture_u:
+		return
+	flip_moon_texture_u = value
+	update_moon_texture()
+
+
+func set_flip_moon_texture_v(value: bool) -> void:
+	if value == flip_moon_texture_v:
+		return
+	flip_moon_texture_v = value
+	update_moon_texture()
+	
+
 func update_moon_texture() -> void:
 	if !is_scene_built:
 		return
 	sky_material.set_shader_parameter(Sky3D.MOON_TEXTURE_P, moon_texture)
+	sky_material.set_shader_parameter(Sky3D.MOON_TEXTURE_ALIGN, moon_texture_alignment)
+	sky_material.set_shader_parameter(Sky3D.MOON_TEXTURE_FLIP_U, flip_moon_texture_u)
+	sky_material.set_shader_parameter(Sky3D.MOON_TEXTURE_FLIP_V, flip_moon_texture_v)
 
 	
 #####################
