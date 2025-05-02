@@ -557,6 +557,9 @@ const SUN_DISK_SIZE_P: String = "_sun_disk_size"
 const MOON_COLOR_P: String = "_moon_color"
 const MOON_SIZE_P: String = "_moon_size"
 const MOON_TEXTURE_P: String = "_moon_texture"
+const MOON_TEXTURE_ALIGN: String = "_moon_texture_alignment"
+const MOON_TEXTURE_FLIP_U: String = "_moon_texture_flip_u"
+const MOON_TEXTURE_FLIP_V: String = "_moon_texture_flip_v"
 
 # Deep Space
 const DEEP_SPACE_MATRIX_P: String = "_deep_space_matrix"
