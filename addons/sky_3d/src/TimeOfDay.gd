@@ -13,7 +13,6 @@ signal year_changed(value)
 
 var _update_timer: Timer
 var _last_update: int = 0
-var _is_compatibility_mode: bool = false
 
 
 @export var update_in_game: bool = true :
@@ -45,8 +44,6 @@ var _is_compatibility_mode: bool = false
 
 
 func _init() -> void:
-	_is_compatibility_mode = RenderingServer.get_current_rendering_method() == "gl_compatibility"
-		
 	set_total_hours(total_hours)
 	set_day(day)
 	set_month(month)
@@ -366,8 +363,6 @@ func __update_celestial_coords() -> void:
 				__dome.sky_material.set_shader_parameter(Sky3D.SKY_ROTATION, -__local_sideral_time)
 				
 	__dome.update_moon_coords()
-	if _is_compatibility_mode:
-		__dome.sky_material.set_shader_parameter(Sky3D.SKY_TIME, _last_update / 1000.0)
 
 
 func __compute_simple_sun_coords() -> void:

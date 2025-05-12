@@ -117,15 +117,6 @@ group_uniforms Transform_Matrices;
 uniform mat3 _moon_matrix; // Set externally via GDScript.
 uniform mat3 _deep_space_matrix; // Set externally via GDScript for star map rotation.
 
-group_uniforms Miscellaneous;
-uniform float _time = 0.0; // For updating/pausing cloud movement and to work around TIME not working in Compatibility Renderer.
-#if CURRENT_RENDERER == RENDERER_COMPATIBILITY
-	#define time _time
-#else
-	#define time TIME
-#endif
-
-
 const int kCUMULUS_CLOUDS_STEP = 10;
 const float k3PI8 = 3.0 / (8.0 * PI);
 
@@ -325,8 +316,8 @@ vec3 atmosphericScattering(float sr, float sm, vec2 mu, vec3 mult) {
 
 // Clouds
 //------------------------------------------------------------------------------
-float noiseClouds(vec2 coords, vec2 offset) {
-	float speed = time * _clouds_speed * .5; // .5 matches cumulus clouds
+float noiseClouds(vec2 coords, vec2 offset, float p_time) {
+	float speed = p_time * _clouds_speed * .5; // .5 matches cumulus clouds
 	vec2 wind = offset * speed;
 	vec2 wind2 = (offset + offset) * speed;
 	float a = textureLod(_clouds_texture, coords.xy * _clouds_uv - wind, 0.0).r;
@@ -361,8 +352,8 @@ float cloudsFBM(vec3 p, float l){
 }
 
 
-float cloudsDensity(vec2 p, vec2 offset) {
-	float d = noiseClouds(p, offset);
+float cloudsDensity(vec2 p, vec2 offset, float p_time) {
+	float d = noiseClouds(p, offset, p_time);
 	float c = 1.0 - _clouds_coverage;
 	d = d - c;
 	//d += d;
@@ -384,19 +375,19 @@ float cloudsDensityCumulus(vec3 p, vec3 offset, float t){
 }
 
 
-vec4 renderClouds(vec3 pos) {
+vec4 renderClouds(vec3 pos, float p_time) {
 	pos.xy = pos.xz / pos.y;
 	pos *= _clouds_size;
-	float density = cloudsDensity(pos.xy, _clouds_direction);
+	float density = cloudsDensity(pos.xy, _clouds_direction, p_time);
 	float sh = saturate(exp(-_clouds_absorption * density));
 	float a = saturate(density * _clouds_thickness);
 	return vec4(vec3(density*sh) * _clouds_intensity, a);
 }
 
 
-vec4 renderCloudsCumulus(vec3 ro, vec3 rd, float tm, float am, vec3 sunPosition, vec3 moonPosition){
+vec4 renderCloudsCumulus(vec3 ro, vec3 rd, float am, vec3 sunPosition, vec3 moonPosition, float p_time) {
 	vec4 ret = vec4(0, 0, 0, 0);
-	vec3 wind = _cumulus_clouds_direction * (tm * _cumulus_clouds_speed);
+	vec3 wind = _cumulus_clouds_direction * (p_time * _cumulus_clouds_speed);
 	float a = 0.0;
 
 	// n and tt doesnt need to be initialized since it would be set by IntersectSphere
@@ -431,7 +422,7 @@ vec4 renderCloudsCumulus(vec3 ro, vec3 rd, float tm, float am, vec3 sunPosition,
 }
 
 
-vec3 render_sky(vec3 worldPos, vec3 cloudsPos, vec3 sunPosition, vec3 moonPosition, vec3 deep_space_coords) {
+vec3 render_sky(vec3 worldPos, vec3 cloudsPos, vec3 sunPosition, vec3 moonPosition, vec3 deep_space_coords, float p_time) {
 	vec3 col = vec3(0.0);
 
 	vec4 angle_mult;
@@ -491,7 +482,7 @@ vec3 render_sky(vec3 worldPos, vec3 cloudsPos, vec3 sunPosition, vec3 moonPositi
 	deepSpace.rgb += deepSpaceBackground.rgb * moonMask + moon_output;
 
 	// Stars Field
-	float starsScintillation = textureLod(_noise_tex, deepSpaceUV + (time * _stars_scintillation_speed), 0.0).r;
+	float starsScintillation = textureLod(_noise_tex, deepSpaceUV + (p_time * _stars_scintillation_speed), 0.0).r;
 	starsScintillation = mix(1.0, starsScintillation * 1.5, _stars_scintillation);
 
 	vec3 starsField = textureLod(_stars_field_texture, deepSpaceUV, 0.0).rgb * _stars_field_color.rgb;
@@ -504,7 +495,7 @@ vec3 render_sky(vec3 worldPos, vec3 cloudsPos, vec3 sunPosition, vec3 moonPositi
 
 	// Clouds
 	if (_clouds_visible) {
-		vec4 clouds = renderClouds(cloudsPos);
+		vec4 clouds = renderClouds(cloudsPos, p_time);
 		clouds.a = saturate(clouds.a);
 		clouds.rgb *= mix(mix(_clouds_day_color.rgb, _clouds_horizon_light_color.rgb, angle_mult.x), _clouds_night_color.rgb, angle_mult.w);
 
@@ -513,7 +504,7 @@ vec3 render_sky(vec3 worldPos, vec3 cloudsPos, vec3 sunPosition, vec3 moonPositi
 	}
 
 	if (_cumulus_clouds_visible) {
-		vec4 cumulusClouds = renderCloudsCumulus(vec3(0.0), cloudsPos, time, angle_mult.z, sunPosition, moonPosition);
+		vec4 cumulusClouds = renderCloudsCumulus(vec3(0.0), cloudsPos, angle_mult.z, sunPosition, moonPosition, p_time);
 		cumulusClouds.a = saturate(cumulusClouds.a);
 		cumulusClouds.rgb *= mix(mix(_cumulus_clouds_day_color.rgb, _cumulus_clouds_horizon_light_color.rgb, angle_mult.x),
 			_cumulus_clouds_night_color.rgb, angle_mult.w);
@@ -529,6 +520,7 @@ vec3 render_sky(vec3 worldPos, vec3 cloudsPos, vec3 sunPosition, vec3 moonPositi
 
 
 void sky() {
+	float current_time = TIME;
 	vec3 col = vec3(0.0); // Set up the initial sky color which will be added to later to produce the final result.
 	vec3 worldPos = EYEDIR; // Original shader set this up in the vertex() function. For sky shaders the overall equivalent is EYEDIR.
 	vec3 cloudsPos = EYEDIR; // The same is used for cloud rendering.
@@ -537,8 +529,7 @@ void sky() {
 	vec3 deep_space_coords = (_deep_space_matrix * EYEDIR).xyz;
 
 	if (_sky_visible) {
-		col = render_sky(worldPos, cloudsPos, sunPosition, moonPosition, deep_space_coords);
+		col = render_sky(worldPos, cloudsPos, sunPosition, moonPosition, deep_space_coords, current_time);
 	}
-
 	COLOR = col.rgb;
 }
