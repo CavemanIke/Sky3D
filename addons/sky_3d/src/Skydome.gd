@@ -12,12 +12,8 @@ signal moon_transform_changed(value)
 signal day_night_changed(value)
 signal lights_changed
 
-var is_scene_built: bool
-
-var moon_render: Node
-
+var is_scene_built: bool = false
 var fog_mesh: MeshInstance3D
-
 var sky_material: ShaderMaterial
 var moon_material: Material
 var clouds_cumulus_material: Material
@@ -1157,13 +1153,13 @@ func set_stars_scintillation_speed(value: float) -> void:
 @export var clouds_speed: float = 0.07: set = set_clouds_speed
 @export var clouds_texture: Texture2D = Sky3D._clouds_texture: set = _set_clouds_texture
 
+
 func set_clouds_visible(value: bool) -> void:
-	if value == clouds_visible:
-		return
-	if !is_scene_built:
+	if !is_scene_built or value == clouds_visible:
 		return
 	clouds_visible = value
 	sky_material.set_shader_parameter(Sky3D.CLOUDS_VISIBLE, value)
+
 
 func set_clouds_thickness(value: float) -> void:
 	if value == clouds_thickness:
@@ -1318,7 +1314,7 @@ func update_clouds_texture() -> void:
 
 
 func set_clouds_cumulus_visible(value: bool) -> void:
-	if value == clouds_cumulus_visible:
+	if !is_scene_built or value == clouds_cumulus_visible:
 		return
 	clouds_cumulus_visible = value
 	sky_material.set_shader_parameter(Sky3D.CUMULUS_CLOUDS_VISIBLE, value)
