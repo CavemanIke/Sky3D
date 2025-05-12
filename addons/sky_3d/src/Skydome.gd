@@ -1160,6 +1160,8 @@ func set_stars_scintillation_speed(value: float) -> void:
 func set_clouds_visible(value: bool) -> void:
 	if value == clouds_visible:
 		return
+	if !is_scene_built:
+		return
 	clouds_visible = value
 	sky_material.set_shader_parameter(Sky3D.CLOUDS_VISIBLE, value)
 
