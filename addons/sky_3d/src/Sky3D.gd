@@ -95,6 +95,7 @@ func set_clouds_enabled(value: bool) -> void:
 func hide_sky() -> void:
 	sky_enabled = false
 	lights_enabled = false
+	fog_enabled = false
 	clouds_enabled = false
 
 
@@ -102,6 +103,7 @@ func hide_sky() -> void:
 func show_sky() -> void:
 	sky_enabled = true
 	lights_enabled = true
+	fog_enabled = true
 	clouds_enabled = true
 
 
@@ -276,7 +278,7 @@ func set_reflected_energy(value: float) -> void:
 		reflected_energy = value
 		if sky_material:
 			sky_material.set_shader_parameter(Sky3D.REFLECTED_ENERGY, value)
-		
+
 
 ## Ratio of ambient light to sky light. See Environment.ambient_light_sky_contribution.
 @export_range(0, 1, 0.005) var sky_contribution: float = 1.0: set = set_sky_contribution
