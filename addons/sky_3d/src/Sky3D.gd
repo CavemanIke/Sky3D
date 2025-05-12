@@ -422,7 +422,7 @@ func _initialize() -> void:
 	if environment.sky == null or environment.sky.sky_material is PhysicalSkyMaterial:
 		environment.sky = Sky.new()
 		environment.sky.sky_material = ShaderMaterial.new()
-		environment.sky.sky_material.shader = _new_sky_shader
+		environment.sky.sky_material.shader = _sky_shader
 		
 	# Set a reference to the sky material for easy access.
 	sky_material = environment.sky.sky_material
@@ -497,7 +497,7 @@ func _set(property: StringName, value: Variant) -> bool:
 const FOG_INSTANCE: String = "_FogMeshI"
 
 # Shaders
-const _new_sky_shader: Shader = preload("res://addons/sky_3d/shaders/SkyMaterial.gdshader")
+const _sky_shader: Shader = preload("res://addons/sky_3d/shaders/SkyMaterial.gdshader")
 const _fog_shader: Shader = preload("res://addons/sky_3d/shaders/AtmFog.gdshader")
 
 # Textures
