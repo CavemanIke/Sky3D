@@ -52,25 +52,25 @@ const float kTAU         = 6.2831853f;
 const float kINV_TAU     = 0.1591549f;
 const float kE           = 2.7182818f;
 
-float saturate(float value){
+float saturate(float value) {
 	return clamp(value, 0.0, 1.0);
 }
 
-vec3 saturateRGB(vec3 value){
+vec3 saturateRGB(vec3 value) {
 	return clamp(value.rgb, 0.0, 1.0);
 }
 
 // pow3
-vec3 contrastLevel(vec3 vec, float level){
+vec3 contrastLevel(vec3 vec, float level) {
 	return mix(vec, vec * vec * vec, level);
 }
 
-vec3 tonemapPhoto(vec3 color, float exposure, float level){
+vec3 tonemapPhoto(vec3 color, float exposure, float level) {
 	color.rgb *= exposure;
 	return mix(color.rgb, 1.0 - exp(-color.rgb), level);
 }
 
-vec2 equirectUV(vec3 norm){
+vec2 equirectUV(vec3 norm) {
 	vec2 ret;
 	ret.x = (atan(norm.x, norm.z) + kPI) * kINV_TAU;
 	ret.y = acos(norm.y) * kINV_PI;
@@ -82,16 +82,16 @@ vec2 equirectUV(vec3 norm){
 const float RAYLEIGH_ZENITH_LENGTH = 8.4e3;
 const float MIE_ZENITH_LENGTH = 1.25e3;
 
-float rayleighPhase(float mu){
+float rayleighPhase(float mu) {
 	return k3PI16 * (1.0 + mu * mu);
 }
 
-float miePhase(float mu, vec3 partial){
+float miePhase(float mu, vec3 partial) {
 	return kPI4 * (partial.x) * (pow(partial.y - partial.z * mu, -1.5));
 }
 
 // Simplifield for more performance
-void simpleOpticalDepth(float y, out float sr, out float sm){
+void simpleOpticalDepth(float y, out float sr, out float sm) {
 	y = max(0.03, y + 0.03) + _atm_level_params.y;
 	y = 1.0 / (y * _atm_level_params.x);
 	sr = y * RAYLEIGH_ZENITH_LENGTH;
@@ -99,7 +99,7 @@ void simpleOpticalDepth(float y, out float sr, out float sm){
 }
 
 // Paper based
-void opticalDepth(float y, out float sr, out float sm){
+void opticalDepth(float y, out float sr, out float sm) {
 	y = max(0.0, y);
 	y = saturate(y * _atm_level_params.x);
 
@@ -111,7 +111,7 @@ void opticalDepth(float y, out float sr, out float sm){
 	sm = zenith * MIE_ZENITH_LENGTH;
 }
 
-vec3 atmosphericScattering(float sr, float sm, vec2 mu, vec3 mult, float depth){
+vec3 atmosphericScattering(float sr, float sm, vec2 mu, vec3 mult, float depth) {
 	vec3 betaMie = _atm_beta_mie;
 	vec3 betaRay = _atm_beta_ray * _atm_thickness;
 
@@ -139,22 +139,22 @@ vec3 atmosphericScattering(float sr, float sm, vec2 mu, vec3 mult, float depth){
 
 // Fog
 //------------------------------------------------------------------------------
-float fogExp(float depth, float density){
+float fogExp(float depth, float density) {
 	return 1.0 - saturate(exp2(-depth * density));
 }
 
-float fogFalloff(float y, float zeroLevel, float falloff){
+float fogFalloff(float y, float zeroLevel, float falloff) {
 	return saturate(exp(-(y + zeroLevel) * falloff));
 }
 
-float fogDistance(float depth){
+float fogDistance(float depth) {
 	float d = depth;
 	d = (_fog_end - d) / (_fog_end - _fog_start);
 	return saturate(1.0 - d);
 }
 
 void computeCoords(vec2 uv, float depth, mat4 camMat, mat4 invProjMat,
-	out vec3 viewDir, out vec3 worldPos){
+	out vec3 viewDir, out vec3 worldPos) {
 
 	vec3 ndc = vec3(uv * 2.0 - 1.0, depth);
 
@@ -175,7 +175,7 @@ varying mat4 camera_matrix;
 varying vec4 angle_mult;
 varying flat int angle;
 
-void vertex(){
+void vertex() {
 	POSITION = vec4(VERTEX.xy, 1.0, 1.0);
 	angle = 0; //ignore; without this the line below errors in 4.3-stable
 	angle_mult.x = saturate(1.0 - _sun_direction.y);
@@ -185,7 +185,7 @@ void vertex(){
 	camera_matrix = INV_VIEW_MATRIX;
 }
 
-void fragment(){
+void fragment() {
 	float depthRaw = texture(DEPTH_TEXTURE, SCREEN_UV).r;
 	
 	#ifndef CURRENT_RENDERER

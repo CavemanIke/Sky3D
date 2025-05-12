@@ -120,28 +120,23 @@ uniform mat3 _deep_space_matrix; // Set externally via GDScript for star map rot
 const int kCUMULUS_CLOUDS_STEP = 10;
 const float k3PI8 = 3.0 / (8.0 * PI);
 
-
 float saturate(float value) {
 	return clamp(value, 0.0, 1.0);
 }
 
-
 vec3 saturateRGB(vec3 value) {
 	return clamp(value.rgb, 0.0, 1.0);
 }
-
 
 // pow3
 vec3 contrastLevel(vec3 vec, float level) {
 	return mix(vec, vec * vec * vec, level);
 }
 
-
-vec3 tonemapPhoto(vec3 color, float exposure, float level){
+vec3 tonemapPhoto(vec3 color, float exposure, float level) {
 	color.rgb *= exposure;
 	return mix(color.rgb, 1.0 - exp(-color.rgb), level);
 }
-
 
 // Provides a transformation matrix when passed a vec3.
 mat3 rotationMatrix(vec3 r) {
@@ -170,14 +165,11 @@ mat3 rotationMatrix(vec3 r) {
     return rotZ * rotY * rotX; // Combine rotations in ZYX order
 }
 
-
 vec2 equirectUV(vec3 norm) {
 	return vec2((atan(norm.y, norm.x) + PI) / TAU, acos(norm.z) / -PI);
 }
 
-
-vec3 get_moon_texture_equirectUV(vec3 dir)
-{
+vec3 get_moon_texture_equirectUV(vec3 dir) {
     dir = _moon_matrix * dir * rotationMatrix(_moon_texture_alignment);
 	dir.x = -dir.x;
 	dir.z = -dir.z;
@@ -191,27 +183,22 @@ vec3 get_moon_texture_equirectUV(vec3 dir)
 	
 	if (_moon_texture_flip_v) {
     	v = 0.5 + asin(dir.y) / 3.141592653589793;
-		
 	} else {
     	v = 0.5 - asin(dir.y) / 3.141592653589793;
 	}
     return texture(_moon_texture, vec2(u, v)).rgb;
 }
 
-
 float disk(vec3 norm, vec3 coords, lowp float size) {
 	float dist = length(norm - coords);
 	return 1.0 - step(size, dist);
 }
 
-
-float remap(float value, float fromMin, float fromMax, float toMin, float toMax){
+float remap(float value, float fromMin, float fromMax, float toMin, float toMax) {
 	return toMin + (value - fromMin) * (toMax - toMin) / (fromMax - fromMin);
 }
 
-
-bool IntersectSphere(float r, vec3 origin, vec3 dir, out float t, out vec3 nrm)
-{
+bool IntersectSphere(float r, vec3 origin, vec3 dir, out float t, out vec3 nrm) {
 	origin += vec3(0.0, 450.0, 0.0);
 	float a = dot(dir, dir);
 	float b = 2.0 * dot(origin, dir);
@@ -235,11 +222,9 @@ bool IntersectSphere(float r, vec3 origin, vec3 dir, out float t, out vec3 nrm)
 	return true;
 }
 
-
 // For rendering the moon. This function courtesy of Kelvin van Hoorn.
 // https://kelvinvanhoorn.com/2024/12/07/skybox-tutorial-godot/
-float sphere_intersect(vec3 ray_dir, vec3 sphere_pos, float radius)
-{
+float sphere_intersect(vec3 ray_dir, vec3 sphere_pos, float radius) {
     vec3 oc = -sphere_pos;
     float b = dot(oc, ray_dir);
     float c = dot(oc, oc) - radius * radius;
@@ -249,21 +234,18 @@ float sphere_intersect(vec3 ray_dir, vec3 sphere_pos, float radius)
     return -b - h;
 }
 
-
 // Atmosphere Inc
 //------------------------------------------------------------------------------
 const float RAYLEIGH_ZENITH_LENGTH = 8.4e3;
 const float MIE_ZENITH_LENGTH = 1.25e3;
 
-float rayleighPhase(float mu){
+float rayleighPhase(float mu) {
 	return k3PI8 * (1.0 + mu * mu);
 }
 
-
-float miePhase(float mu, vec3 partial){
+float miePhase(float mu, vec3 partial) {
 	return (4.0 * PI) * (partial.x) * (pow(partial.y - partial.z * mu, -1.5));
 }
-
 
 // Simplifield for more performance
 void simpleOpticalDepth(float y, out float sr, out float sm) {
@@ -272,7 +254,6 @@ void simpleOpticalDepth(float y, out float sr, out float sm) {
 	sr = y * RAYLEIGH_ZENITH_LENGTH;
 	sm = y * MIE_ZENITH_LENGTH;
 }
-
 
 // Paper based
 void opticalDepth(float y, out float sr, out float sm) {
@@ -286,7 +267,6 @@ void opticalDepth(float y, out float sr, out float sm) {
 	sr = zenith * RAYLEIGH_ZENITH_LENGTH;
 	sm = zenith * MIE_ZENITH_LENGTH;
 }
-
 
 vec3 atmosphericScattering(float sr, float sm, vec2 mu, vec3 mult) {
 	vec3 betaMie = _atm_beta_mie;
@@ -313,7 +293,6 @@ vec3 atmosphericScattering(float sr, float sm, vec2 mu, vec3 mult) {
 	return (scatter * lcol) + nscatter;
 }
 
-
 // Clouds
 //------------------------------------------------------------------------------
 float noiseClouds(vec2 coords, vec2 offset, float p_time) {
@@ -325,8 +304,7 @@ float noiseClouds(vec2 coords, vec2 offset, float p_time) {
 	return ((a + b) * 0.5);
 }
 
-
-float noiseCloudsCumulus(vec3 p){
+float noiseCloudsCumulus(vec3 p) {
 	vec3 pos = vec3(p * 0.01);
 	pos.z *= 256.0;
 	vec2 offset = vec2(0.317, 0.123);
@@ -338,8 +316,7 @@ float noiseCloudsCumulus(vec3 p){
 	return mix(x1, x2, fract(pos.z));
 }
 
-
-float cloudsFBM(vec3 p, float l){
+float cloudsFBM(vec3 p, float l) {
 	float ret;
 	ret = 0.51749673 * noiseCloudsCumulus(p);
 	p *= l;
@@ -351,7 +328,6 @@ float cloudsFBM(vec3 p, float l){
 	return ret;
 }
 
-
 float cloudsDensity(vec2 p, vec2 offset, float p_time) {
 	float d = noiseClouds(p, offset, p_time);
 	float c = 1.0 - _clouds_coverage;
@@ -360,8 +336,7 @@ float cloudsDensity(vec2 p, vec2 offset, float p_time) {
 	return saturate(d);
 }
 
-
-float cloudsDensityCumulus(vec3 p, vec3 offset, float t){
+float cloudsDensityCumulus(vec3 p, vec3 offset, float t) {
 	vec3 pos = p * 0.0212242 - offset;
 	float dens = cloudsFBM(pos, _cumulus_clouds_noise_freq);
 	dens += dens;
@@ -374,7 +349,6 @@ float cloudsDensityCumulus(vec3 p, vec3 offset, float t){
 	return saturate(dens);
 }
 
-
 vec4 renderClouds(vec3 pos, float p_time) {
 	pos.xy = pos.xz / pos.y;
 	pos *= _clouds_size;
@@ -384,7 +358,6 @@ vec4 renderClouds(vec3 pos, float p_time) {
 	return vec4(vec3(density*sh) * _clouds_intensity, a);
 }
 
-
 vec4 renderCloudsCumulus(vec3 ro, vec3 rd, float am, vec3 sunPosition, vec3 moonPosition, float p_time) {
 	vec4 ret = vec4(0, 0, 0, 0);
 	vec3 wind = _cumulus_clouds_direction * (p_time * _cumulus_clouds_speed);
@@ -392,8 +365,7 @@ vec4 renderCloudsCumulus(vec3 ro, vec3 rd, float am, vec3 sunPosition, vec3 moon
 
 	// n and tt doesnt need to be initialized since it would be set by IntersectSphere
 	vec3 n; float tt;
-    if(IntersectSphere(500, ro, rd, tt, n))
-	{
+    if(IntersectSphere(500, ro, rd, tt, n)) {
 		float marchStep = float(kCUMULUS_CLOUDS_STEP) * _cumulus_clouds_thickness;
 		vec3 dirStep = rd / rd.y * marchStep;
 		vec3 pos = n * _cumulus_clouds_size;
@@ -405,8 +377,7 @@ vec4 renderCloudsCumulus(vec3 ro, vec3 rd, float am, vec3 sunPosition, vec3 moon
 		vec4 t = vec4(1.0);
 		t.rgb += (mph.rgb * _cumulus_clouds_mie_intensity);
 
-		for(int i = 0; i < kCUMULUS_CLOUDS_STEP; i++)
-		{
+		for(int i = 0; i < kCUMULUS_CLOUDS_STEP; i++) {
 			float h = float(i) * 0.1; // / float(kCLOUDS_STEP);
 
 			float density = cloudsDensityCumulus(pos, wind, h);
@@ -420,7 +391,6 @@ vec4 renderCloudsCumulus(vec3 ro, vec3 rd, float am, vec3 sunPosition, vec3 moon
 	}
 	return vec4(ret.rgb * _cumulus_clouds_intensity, a);
 }
-
 
 vec3 render_sky(vec3 worldPos, vec3 cloudsPos, vec3 sunPosition, vec3 moonPosition, vec3 deep_space_coords, float p_time) {
 	vec3 col = vec3(0.0);
@@ -517,7 +487,6 @@ vec3 render_sky(vec3 worldPos, vec3 cloudsPos, vec3 sunPosition, vec3 moonPositi
 	col.rgb *= _reflected_energy;
 	return col;
 }
-
 
 void sky() {
 	float current_time = TIME;
