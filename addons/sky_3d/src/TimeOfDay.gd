@@ -92,17 +92,14 @@ func resume() -> void:
 ## Target
 #####################
 
-var __dome: Skydome = null
-var __dome_found: bool = false
+var _sky_dome: Skydome = null
 var dome_path: NodePath: set = set_dome_path
 
 
 func set_dome_path(value: NodePath) -> void:
 	dome_path = value
 	if value != null:
-		__dome = get_node_or_null(value) as Skydome
-	
-	__dome_found = false if __dome == null else true
+		_sky_dome = get_node_or_null(value)
 	__update_celestial_coords()
 
 
@@ -326,41 +323,43 @@ func __get_date_time_os() -> void:
 
 
 func __update_celestial_coords() -> void:
-	if not __dome_found:
+	if not _sky_dome:
 		return
 
 	match celestials_calculations:
 		CelestialCalculationsMode.Simple:
 			__compute_simple_sun_coords()
-			__dome.sun_altitude = __sun_coords.y
-			__dome.sun_azimuth = __sun_coords.x
+			_sky_dome.sun_altitude = __sun_coords.y
+			_sky_dome.sun_azimuth = __sun_coords.x
 			if compute_moon_coords:
 				__compute_simple_moon_coords()
-				__dome.moon_altitude = __moon_coords.y
-				__dome.moon_azimuth = __moon_coords.x
+				_sky_dome.moon_altitude = __moon_coords.y
+				_sky_dome.moon_azimuth = __moon_coords.x
 			
 			if compute_deep_space_coords:
 				var x: Quaternion = Quaternion.from_euler(Vector3( (90 + latitude) * TOD_Math.DEG_TO_RAD, 0.0, 0.0))
 				var y: Quaternion = Quaternion.from_euler(Vector3(0.0, 0.0, __sun_coords.y * TOD_Math.DEG_TO_RAD))
-				__dome.deep_space_quat = x * y
-				__dome.sky_material.set_shader_parameter(Sky3D.SKY_TILT, deg_to_rad(90 - latitude))
+				_sky_dome.deep_space_quat = x * y
+				if _sky_dome.is_scene_built:
+					_sky_dome.sky_material.set_shader_parameter(Sky3D.SKY_TILT, deg_to_rad(90 - latitude))
 		
 		CelestialCalculationsMode.Realistic:
 			__compute_realistic_sun_coords()
-			__dome.sun_altitude = -__sun_coords.y * TOD_Math.RAD_TO_DEG
-			__dome.sun_azimuth = -__sun_coords.x * TOD_Math.RAD_TO_DEG
+			_sky_dome.sun_altitude = -__sun_coords.y * TOD_Math.RAD_TO_DEG
+			_sky_dome.sun_azimuth = -__sun_coords.x * TOD_Math.RAD_TO_DEG
 			if compute_moon_coords:
 				__compute_realistic_moon_coords()
-				__dome.moon_altitude = -__moon_coords.y * TOD_Math.RAD_TO_DEG
-				__dome.moon_azimuth = -__moon_coords.x * TOD_Math.RAD_TO_DEG
+				_sky_dome.moon_altitude = -__moon_coords.y * TOD_Math.RAD_TO_DEG
+				_sky_dome.moon_azimuth = -__moon_coords.x * TOD_Math.RAD_TO_DEG
 			
 			if compute_deep_space_coords:
 				var x: Quaternion = Quaternion.from_euler(Vector3( (90 + latitude) * TOD_Math.DEG_TO_RAD, 0.0, 0.0) )
 				var y: Quaternion = Quaternion.from_euler(Vector3(0.0, 0.0,  (180.0 - __local_sideral_time * TOD_Math.RAD_TO_DEG) * TOD_Math.DEG_TO_RAD)) 
-				__dome.deep_space_quat = x * y
-				__dome.sky_material.set_shader_parameter(Sky3D.SKY_TILT, deg_to_rad(-90 + latitude))
-				__dome.sky_material.set_shader_parameter(Sky3D.SKY_ROTATION, -__local_sideral_time)
-	__dome.update_moon_coords()
+				_sky_dome.deep_space_quat = x * y
+				if _sky_dome.is_scene_built:
+					_sky_dome.sky_material.set_shader_parameter(Sky3D.SKY_TILT, deg_to_rad(-90 + latitude))
+					_sky_dome.sky_material.set_shader_parameter(Sky3D.SKY_ROTATION, -__local_sideral_time)
+	_sky_dome.update_moon_coords()
 
 
 func __compute_simple_sun_coords() -> void:

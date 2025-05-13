@@ -391,7 +391,7 @@ func update_moon_coords() -> void:
 func update_atm_quality() -> void:
 	if !is_scene_built:
 		return
-	sky_material.shader = Sky3D._new_sky_shader
+	sky_material.shader = Sky3D._sky_shader
 
 
 func set_atm_wavelengths(value : Vector3) -> void:
