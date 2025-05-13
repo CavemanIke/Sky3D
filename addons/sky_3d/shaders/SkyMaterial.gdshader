@@ -11,7 +11,6 @@ group_uniforms General;
 uniform vec2 _color_correction_params = vec2(0.0, 1.0);
 uniform vec4 _ground_color: source_color = vec4(0.3, 0.3, 0.3, 1.0);
 uniform float _horizon_level = 0.0;
-uniform float _reflected_energy: hint_range(0.0, 128.0, 0.1) = 1.0;
 
 // Moon and Deep Space
 
@@ -484,7 +483,6 @@ vec3 render_sky(vec3 worldPos, vec3 cloudsPos, vec3 sunPosition, vec3 moonPositi
 
 	col.rgb = mix(col.rgb, _ground_color.rgb * scatter, saturate((-worldPos.y - _atm_level_params.z) * 100.0));
 	col.rgb = tonemapPhoto(col.rgb, _color_correction_params.y, _color_correction_params.x);
-	col.rgb *= _reflected_energy;
 	return col;
 }
 

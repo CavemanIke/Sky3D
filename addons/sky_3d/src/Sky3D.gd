@@ -226,16 +226,7 @@ func update_day_night(force: bool = false) -> void:
 @export_group("Lighting")
 
 
-## Exposure used for the tonemapper. See Evironment.tonemap_exposure
-@export_range(0, 16, 0.005) var tonemap_exposure: float = 1.0: set = set_tonemap_exposure
-
-func set_tonemap_exposure(value: float) -> void:
-	if environment:
-		tonemap_exposure = value
-		environment.tonemap_exposure = value
-
-
-## Exposure of camera connected to Environment.camera_attributes.
+## Light intensity scaled before the tonemapper. Softer highlights. Adjusts the camera connected to Environment.camera_attributes.
 @export_range(0, 16, 0.005) var camera_exposure: float = 1.0: set = set_camera_exposure
 
 func set_camera_exposure(value: float) -> void:
@@ -244,7 +235,16 @@ func set_camera_exposure(value: float) -> void:
 		camera_attributes.exposure_multiplier = value
 
 
-## Brightness of the sky before skydome tonemapping.
+## Light intensity scaled in post processing. Hotter highlights. See Evironment.tonemap_exposure.
+@export_range(0, 16, 0.005) var tonemap_exposure: float = 1.0: set = set_tonemap_exposure
+
+func set_tonemap_exposure(value: float) -> void:
+	if environment:
+		tonemap_exposure = value
+		environment.tonemap_exposure = value
+
+
+## Light energy coming from the sky shader.
 @export_range(0, 16, 0.005) var skydome_energy: float = 1.0: set = set_skydome_energy
 
 func set_skydome_energy(value: float) -> void:
@@ -253,17 +253,7 @@ func set_skydome_energy(value: float) -> void:
 		sky.exposure = value
 
 
-## Brightness of the sky after skydome tonemapping.
-@export_range(0,128,.005) var reflected_energy: float = 1.0: set = set_reflected_energy
-
-func set_reflected_energy(value: float) -> void:
-	if environment:
-		reflected_energy = value
-		if sky_material:
-			sky_material.set_shader_parameter(Sky3D.REFLECTED_ENERGY, value)
-
-
-## Brightness of the clouds.
+## Brightness of and light energy coming from the clouds.
 @export_range(0, 16, 0.005) var cloud_intensity: float = 0.6: set = set_cloud_intensity
 
 func set_cloud_intensity(value: float) -> void:
@@ -531,7 +521,6 @@ const COLOR_CORRECTION_P: String = "_color_correction_params"
 const GROUND_COLOR_P: String = "_ground_color"
 const NOISE_TEX: String = "_noise_tex"
 const HORIZON_LEVEL: String = "_horizon_level"
-const REFLECTED_ENERGY: String = "_reflected_energy"
 
 # Atmosphere
 const ATM_DARKNESS_P: String = "_atm_darkness"
