@@ -235,16 +235,6 @@ func set_tonemap_exposure(value: float) -> void:
 		environment.tonemap_exposure = value
 
 
-## Strength of skydome and fog.
-@export_range(0, 16, 0.005) var skydome_energy: float = 1.3: set = set_skydome_energy
-
-func set_skydome_energy(value: float) -> void:
-	if sky:
-		skydome_energy = value
-		sky.exposure = value
-		sky.clouds_cumulus_intensity = value * .769 # (1/1.3 default sun energy)
-
-
 ## Exposure of camera connected to Environment.camera_attributes.
 @export_range(0, 16, 0.005) var camera_exposure: float = 1.0: set = set_camera_exposure
 
@@ -254,7 +244,35 @@ func set_camera_exposure(value: float) -> void:
 		camera_attributes.exposure_multiplier = value
 
 
-## Maximum strength of Sun DirectionalLight, visible during the day.
+## Brightness of the sky before skydome tonemapping.
+@export_range(0, 16, 0.005) var skydome_energy: float = 1.0: set = set_skydome_energy
+
+func set_skydome_energy(value: float) -> void:
+	if sky:
+		skydome_energy = value
+		sky.exposure = value
+
+
+## Brightness of the sky after skydome tonemapping.
+@export_range(0,128,.005) var reflected_energy: float = 1.0: set = set_reflected_energy
+
+func set_reflected_energy(value: float) -> void:
+	if environment:
+		reflected_energy = value
+		if sky_material:
+			sky_material.set_shader_parameter(Sky3D.REFLECTED_ENERGY, value)
+
+
+## Brightness of the clouds.
+@export_range(0, 16, 0.005) var cloud_intensity: float = 0.6: set = set_cloud_intensity
+
+func set_cloud_intensity(value: float) -> void:
+	if sky:
+		cloud_intensity = value
+		sky.clouds_cumulus_intensity = value
+
+
+## Maximum brightness of the Sun DirectionalLight, visible during the day.
 @export_range(0, 16, 0.005) var sun_energy: float = 1.0: set = set_sun_energy
 		
 func set_sun_energy(value: float) -> void:
@@ -270,14 +288,6 @@ func set_sun_shadow_opacity(value: float) -> void:
 	sun_shadow_opacity = value
 	if sun:
 		sun.shadow_opacity = value
-		
-@export_range(0,128,.005) var reflected_energy: float = 1.0: set = set_reflected_energy
-
-func set_reflected_energy(value: float) -> void:
-	if environment:
-		reflected_energy = value
-		if sky_material:
-			sky_material.set_shader_parameter(Sky3D.REFLECTED_ENERGY, value)
 
 
 ## Ratio of ambient light to sky light. See Environment.ambient_light_sky_contribution.

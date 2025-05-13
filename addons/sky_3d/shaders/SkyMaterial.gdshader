@@ -8,7 +8,7 @@ uniform bool _sky_visible = true;
 
 // Color correction
 group_uniforms General;
-uniform vec2 _color_correction_params = vec2(0.0, 1.3);
+uniform vec2 _color_correction_params = vec2(0.0, 1.0);
 uniform vec4 _ground_color: source_color = vec4(0.3, 0.3, 0.3, 1.0);
 uniform float _horizon_level = 0.0;
 uniform float _reflected_energy: hint_range(0.0, 128.0, 0.1) = 1.0;

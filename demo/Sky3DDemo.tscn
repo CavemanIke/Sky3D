@@ -15,7 +15,7 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_v8wrf"]
 shader = ExtResource("4_v8wrf")
 shader_parameter/_sky_visible = true
-shader_parameter/_color_correction_params = Vector2(0, 1.3)
+shader_parameter/_color_correction_params = Vector2(0, 1)
 shader_parameter/_ground_color = Color(0.3, 0.3, 0.3, 1)
 shader_parameter/_horizon_level = 0.0
 shader_parameter/_reflected_energy = 1.0
@@ -62,12 +62,12 @@ shader_parameter/_clouds_horizon_light_color = Color(0.98, 0.43, 0.15, 1)
 shader_parameter/_clouds_night_color = Color(0.090196, 0.094118, 0.129412, 1)
 shader_parameter/_clouds_texture = ExtResource("6_1g8sw")
 shader_parameter/_cumulus_clouds_visible = true
-shader_parameter/_cumulus_clouds_coverage = 0.55
+shader_parameter/_cumulus_clouds_coverage = 0.58
 shader_parameter/_cumulus_clouds_thickness = 0.0243
 shader_parameter/_cumulus_clouds_absorption = 2.0
 shader_parameter/_cumulus_clouds_noise_freq = 2.7
 shader_parameter/_cumulus_clouds_sky_tint_fade = 0.0
-shader_parameter/_cumulus_clouds_intensity = 1.0
+shader_parameter/_cumulus_clouds_intensity = 0.6
 shader_parameter/_cumulus_clouds_size = 0.5
 shader_parameter/_cumulus_clouds_speed = 0.05
 shader_parameter/_cumulus_clouds_direction = Vector3(0.25, 0.1, 0.25)
@@ -137,6 +137,7 @@ moon_altitude = -85.7048
 fog_density = 0.00150049
 fog_end = 500.0
 deep_space_euler = Vector3(1.29154, 3.14159, 2.66052)
+clouds_cumulus_coverage = 0.58
 
 [node name="TimeOfDay" type="Node" parent="Sky3D"]
 script = ExtResource("3")
