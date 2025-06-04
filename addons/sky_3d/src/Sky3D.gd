@@ -67,8 +67,9 @@ func set_lights_enabled(value: bool) -> void:
 	lights_enabled = value
 	if not sky:
 		return
-	sky.__sun_light_node.visible = value
-	sky.__moon_light_node.visible = value
+		
+	sky.sun_light_enabled = value
+	sky.moon_light_enabled = value
 	
 
 ## Enables the screen space fog shader.
