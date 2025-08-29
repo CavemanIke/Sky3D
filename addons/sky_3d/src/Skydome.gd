@@ -1110,8 +1110,10 @@ func set_display_alignment_lasers(value: bool) -> void:
 			_vega_laser = _create_alignment_laser("__vega_laser", VEGA_LASER_ALIGNMENT)
 			add_child(_vega_laser)
 	else:
-		if is_instance_valid(_polaris_laser): _polaris_laser.queue_free()
-		if is_instance_valid(_vega_laser): _vega_laser.queue_free()
+		if is_instance_valid(_polaris_laser):
+			_polaris_laser.queue_free()
+		if is_instance_valid(_vega_laser):
+			_vega_laser.queue_free()
 		_polaris_laser = null
 		_vega_laser = null
 		_laser_material = null
