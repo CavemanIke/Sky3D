@@ -1067,16 +1067,34 @@ func update_moon_light_path() -> void:
 
 @export_group("Deep Space")
 var deep_space_euler: Vector3 = Vector3(0, 0, 0.0): set = set_deep_space_euler # DEPRECATED
-@export var starmap_alignment: Vector3 = Vector3(2.68225, -0.25995, 0.39925): set = set_starmap_alignment # Default values work for most star maps in galactic coordinate format.
+## For aligning the star map texture map to known reference points. See [annotation Skydome.display_alignment_lasers].
+@export var starmap_alignment: Vector3 = Vector3(2.68225, -0.25995, 0.39925): set = set_starmap_alignment
+## Offset value for realigning the sky's rotation if using a datetime too many years off from the "epoch" of March 20, 2025.[br][br]
+## [b]Temporary; will eventually be removed in a future update.[/b]
+@export var sky_rotation_offset: float = 9.38899: set = set_sky_rotation_offset
+## Flips the star map texture's U. Useful if the imported texture is backwards or upside down.
 @export var starmap_flip_u: bool = false: set = set_starmap_flip_u
+## Flips the star map texture's V. Useful if the imported texture is backwards or upside down.
 @export var starmap_flip_v: bool = false: set = set_starmap_flip_v
+## Displays two red lines in 3D space aligned with Polaris and Vega if standing at the North Pole on the Vernal Equinox, 20 March 2025 at midnight.[br][br]
+## [b][u]Usage[/u][/b][br]
+## 1. Set the date and time in [TimeOfDay] to 20 March 2025 at midnight (0 hours), and the UTC to zero (0).[br]
+## 2. Set the location in TimeOfDay to 90° North Latitude and 0° Longitude.[br]
+## 3. In Skydome, check [param display_alignment_lasers]. Two red lines will appear in 3D space to indicate the location of Polaris (North) and Vega (East).[br]
+## 4. Adjust [param starmap_alignment] to align the correct stars to their respective lasers.[br][br]
+## [b][u]Tips[/u][/b][br]
+## · Use a photo editor to mark known stars on the texture for easy identification in the editor.[br]
+## · Set the viewport Perspective VFOV to a lower value to "zoom" in on the sky for a better view. This is located under View > Settings in the toolbar.[br]
+## · Use at least two viewports to see both lasers simultaneously.
 @export var display_alignment_lasers: bool = false : set = set_display_alignment_lasers
 @export var background_color: Color = Color(0.709804, 0.709804, 0.709804, 0.854902): set = set_background_color
 @export var background_texture: Texture2D = Sky3D.background_texture: set = _set_background_texture
 @export var stars_field_color: Color = Color.WHITE: set = set_stars_field_color
 @export var stars_field_texture: Texture2D = Sky3D.stars_field_texture: set = _set_stars_field_texture
+## Controls the intensity of the simulated star "twinkling".
 @export_range(0.0, 1.0, 0.001) var stars_scintillation: float = 0.75: set = set_stars_scintillation
-@export var stars_scintillation_speed: float = 0.01: set = set_stars_scintillation_speed
+## Adjusts the speed at which the texture used for star "twinkling" moves across the star map textures.
+@export var stars_scintillation_speed: float = 0.01: set = set_stars_scintillation_speed ##
 
 const POLARIS_LASER_ALIGNMENT: Vector3 = Vector3(89.4, 48.2, 0.0)
 const VEGA_LASER_ALIGNMENT: Vector3 = Vector3(38.8, -78.3, 0.0)
@@ -1092,6 +1110,12 @@ func set_starmap_alignment(value: Vector3) -> void:
 	starmap_alignment = value
 	if sky_material:
 		sky_material.set_shader_parameter("sky_alignment", value)
+		
+		
+func set_sky_rotation_offset(value: float) -> void:
+	sky_rotation_offset = value
+	if sky_material:
+		sky_material.set_shader_parameter("sky_rotation_offset", value)
 		
 		
 func set_display_alignment_lasers(value: bool) -> void:
