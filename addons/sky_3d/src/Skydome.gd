@@ -1119,7 +1119,7 @@ func _create_alignment_laser(name_hint: String, rot_deg: Vector3) -> MeshInstanc
 	var immediate_mesh := ImmediateMesh.new()
 	immediate_mesh.surface_begin(Mesh.PRIMITIVE_LINES)
 	immediate_mesh.surface_set_color(LASER_COLOR)
-	immediate_mesh.surface_add_vertex(Vector3(0, 0, 0)) # small offset to avoid z-fighting
+	immediate_mesh.surface_add_vertex(Vector3(0, 0, 0))
 	immediate_mesh.surface_set_color(LASER_COLOR)
 	immediate_mesh.surface_add_vertex(Vector3(0, 0, -1_000_000))
 	immediate_mesh.surface_end()
@@ -1127,7 +1127,7 @@ func _create_alignment_laser(name_hint: String, rot_deg: Vector3) -> MeshInstanc
 	var laser_mesh := MeshInstance3D.new()
 	laser_mesh.name = name_hint
 	laser_mesh.mesh = immediate_mesh
-	laser_mesh.material_override = laser_material
+	laser_mesh.material_override = _laser_material
 	laser_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	laser_mesh.rotation_degrees = rot_deg
 	add_child(laser_mesh)
