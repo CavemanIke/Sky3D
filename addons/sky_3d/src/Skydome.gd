@@ -1083,9 +1083,9 @@ const VEGA_LASER_ALIGNMENT: Vector3 = Vector3(38.8, -78.3, 0.0)
 const LASER_COLOR: Color = Color(1.0, 0.0, 0.0, 1.0)
 var deep_space_quat: Quaternion = Quaternion.IDENTITY: set = set_deep_space_quat
 var _deep_space_basis: Basis
-var polaris_laser: MeshInstance3D
-var vega_laser: MeshInstance3D
-var laser_material: StandardMaterial3D
+var _polaris_laser: MeshInstance3D
+var _vega_laser: MeshInstance3D
+var _laser_material: StandardMaterial3D
 
 
 func set_starmap_alignment(value: Vector3) -> void:
@@ -1097,22 +1097,22 @@ func set_starmap_alignment(value: Vector3) -> void:
 func set_display_alignment_lasers(value: bool) -> void:
 	display_alignment_lasers = value
 	
-	if laser_material == null:
-		laser_material = StandardMaterial3D.new()
-		laser_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		laser_material.vertex_color_use_as_albedo = true
+	if _laser_material == null:
+		_laser_material = StandardMaterial3D.new()
+		_laser_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		_laser_material.vertex_color_use_as_albedo = true
 	
 	if display_alignment_lasers:
-		if not is_instance_valid(polaris_laser):
-			polaris_laser = _create_alignment_laser("__polaris_laser", POLARIS_LASER_ALIGNMENT)
-		if not is_instance_valid(vega_laser):
-			vega_laser = _create_alignment_laser("__vega_laser", VEGA_LASER_ALIGNMENT)
+		if not is_instance_valid(_polaris_laser):
+			_polaris_laser = _create_alignment_laser("__polaris_laser", POLARIS_LASER_ALIGNMENT)
+		if not is_instance_valid(_vega_laser):
+			_vega_laser = _create_alignment_laser("__vega_laser", VEGA_LASER_ALIGNMENT)
 	else:
-		if is_instance_valid(polaris_laser): polaris_laser.queue_free()
-		if is_instance_valid(vega_laser): vega_laser.queue_free()
-		polaris_laser = null
-		vega_laser = null
-		laser_material = null
+		if is_instance_valid(_polaris_laser): _polaris_laser.queue_free()
+		if is_instance_valid(_vega_laser): _vega_laser.queue_free()
+		_polaris_laser = null
+		_vega_laser = null
+		_laser_material = null
 	
 	
 func _create_alignment_laser(name_hint: String, rot_deg: Vector3) -> MeshInstance3D:
