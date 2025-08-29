@@ -1105,8 +1105,10 @@ func set_display_alignment_lasers(value: bool) -> void:
 	if display_alignment_lasers:
 		if not is_instance_valid(_polaris_laser):
 			_polaris_laser = _create_alignment_laser("__polaris_laser", POLARIS_LASER_ALIGNMENT)
+			add_child(_polaris_laser)
 		if not is_instance_valid(_vega_laser):
 			_vega_laser = _create_alignment_laser("__vega_laser", VEGA_LASER_ALIGNMENT)
+			add_child(_vega_laser)
 	else:
 		if is_instance_valid(_polaris_laser): _polaris_laser.queue_free()
 		if is_instance_valid(_vega_laser): _vega_laser.queue_free()
@@ -1130,7 +1132,6 @@ func _create_alignment_laser(name_hint: String, rot_deg: Vector3) -> MeshInstanc
 	laser_mesh.material_override = _laser_material
 	laser_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	laser_mesh.rotation_degrees = rot_deg
-	add_child(laser_mesh)
 	return laser_mesh
 		
 		
