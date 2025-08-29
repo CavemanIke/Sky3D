@@ -67,6 +67,7 @@ uniform sampler2D stars_field_texture: source_color;
 uniform bool starmap_flip_u = false;
 uniform bool starmap_flip_v = false;
 uniform vec3 sky_alignment = vec3(2.68225, -0.25995, 0.39925);
+uniform float sky_rotation_offset = 9.38899;
 uniform float sky_rotation = 0.0; // For simulating Earth rotation.
 uniform float sky_tilt = 0.0; // For tilting the sky according to observer latitude in radians. (90° - latitude)
 uniform float stars_scintillation = 0.75;
@@ -184,8 +185,8 @@ vec3 get_moon_texture_equirectUV(vec3 dir) {
 	dir.z = -dir.z;
 	float flipu = moon_texture_flip_u ? 1.0 : -1.0;
 	float flipv = moon_texture_flip_v ? 1.0 : -1.0;
-	float u = 0.5 + flipu * atan(dir.z, dir.x) / (2.0 * 3.141592653589793); // Longitude
-	float v = 0.5 + flipv * asin(dir.y) / 3.141592653589793; // Latitude
+	float u = 0.5 + flipu * atan(dir.z, dir.x) / (2.0 * PI); // Longitude
+	float v = 0.5 + flipv * asin(dir.y) / PI; // Latitude
 	return texture(moon_texture, vec2(u, v)).rgb;
 }
 
@@ -429,7 +430,7 @@ vec3 render_sky(vec3 worldPos, vec3 cloudsPos, vec3 sunPosition, vec3 moonPositi
 	mat3 tilt = rotationMatrix(vec3(sky_tilt, 0.0, 0.0));
 
 	// Rotation around Y-axis. For simulating Earth's rotation.
-	mat3 rotation = rotationMatrix(vec3(0.0, sky_rotation + 9.38899, 0.0));
+	mat3 rotation = rotationMatrix(vec3(0.0, sky_rotation + sky_rotation_offset, 0.0));
 
 	// Initial XYZ rotation for alignment.
 	mat3 alignment_xyz = rotationMatrix(sky_alignment);
@@ -530,7 +531,7 @@ void draw_grid(vec3 dir, vec3 pole_dir, float rotation_angle, vec4 line_color, f
 	// Add poles
 	float pole_thickness = circle_thickness;
 	float north_pole = 1.0 - smoothstep(0.0, pole_thickness, theta);
-	float south_pole = 1.0 - smoothstep(0.0, pole_thickness, abs(theta - 3.14159));
+	float south_pole = 1.0 - smoothstep(0.0, pole_thickness, abs(theta - PI));
 	circle_line = max(circle_line, max(north_pole, south_pole));
 
 	// Darken Lat at poles
