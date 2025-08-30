@@ -223,8 +223,10 @@ func update_horizon_level() -> void:
 @export_group("Overlays")
 @export var show_azimuthal_grid: bool = false: set = set_azimuthal_grid
 @export var azimuthal_grid_color := Color.BURLYWOOD: set = set_azimuthal_color
+@export_range(0.0, 1.0, 0.001) var azimuthal_grid_rotation_offset = 0.03: set = set_azimuthal_grid_rotation_offset
 @export var show_equatorial_grid: bool = false: set = set_equatorial_grid
 @export var equatorial_grid_color := Color(.0, .75, 1.): set = set_equatorial_color
+@export_range(0.0, 1.0, 0.001) var equatorial_grid_rotation_offset = 0.03: set = set_equatorial_grid_rotation_offset
 
 func set_azimuthal_grid(value: bool) -> void:
 	if !is_scene_built:
@@ -240,6 +242,12 @@ func set_azimuthal_color(value: Color) -> void:
 	sky_material.set_shader_parameter("azimuthal_grid_color", value)
 	
 
+func set_azimuthal_grid_rotation_offset(value: float) -> void:
+	azimuthal_grid_rotation_offset = value
+	if sky_material:
+		sky_material.set_shader_parameter("azimuthal_grid_rotation_offset", value)
+	
+
 func set_equatorial_grid(value: bool) -> void:
 	if !is_scene_built:
 		return
@@ -252,6 +260,12 @@ func set_equatorial_color(value: Color) -> void:
 		return
 	equatorial_grid_color = value
 	sky_material.set_shader_parameter("equatorial_grid_color", value)
+	
+	
+func set_equatorial_grid_rotation_offset(value: float) -> void:
+	equatorial_grid_rotation_offset = value
+	if sky_material:
+		sky_material.set_shader_parameter("equatorial_grid_rotation_offset", value)
 
 		
 #####################
@@ -1068,7 +1082,7 @@ func update_moon_light_path() -> void:
 @export_group("Deep Space")
 var deep_space_euler: Vector3 = Vector3(0, 0, 0.0): set = set_deep_space_euler # DEPRECATED
 ## For aligning the star map texture map to known reference points. See [annotation Skydome.display_alignment_lasers].
-@export var starmap_alignment: Vector3 = Vector3(2.68225, -0.25995, 0.39925): set = set_starmap_alignment
+@export var starmap_alignment: Vector3 = Vector3(2.68288, -0.25891, 0.40101): set = set_starmap_alignment
 ## Offset value for realigning the sky's rotation if using a datetime too many years off from the "epoch" of March 20, 2025.[br][br]
 ## [b]Temporary; will eventually be removed in a future update.[/b]
 @export var sky_rotation_offset: float = 9.38899: set = set_sky_rotation_offset
@@ -1085,7 +1099,9 @@ var deep_space_euler: Vector3 = Vector3(0, 0, 0.0): set = set_deep_space_euler #
 ## [b][u]Tips[/u][/b][br]
 ## · Use a photo editor to mark known stars on the texture for easy identification in the editor.[br]
 ## · Set the viewport Perspective VFOV to a lower value to "zoom" in on the sky for a better view. This is located under View > Settings in the toolbar.[br]
-## · Use at least two viewports to see both lasers simultaneously.
+## · Use at least two viewports to see both lasers simultaneously.[br]
+## · Position the view near the origin point as perspective may throw off adjustments.[br]
+## · Not all texture maps are created equal. Distortions may result in alignments being slightly off no matter what.
 @export var display_alignment_lasers: bool = false : set = set_display_alignment_lasers
 @export var background_color: Color = Color(0.709804, 0.709804, 0.709804, 0.854902): set = set_background_color
 @export var background_texture: Texture2D = Sky3D.background_texture: set = _set_background_texture
@@ -1096,8 +1112,12 @@ var deep_space_euler: Vector3 = Vector3(0, 0, 0.0): set = set_deep_space_euler #
 ## Adjusts the speed at which the texture used for star "twinkling" moves across the star map textures.
 @export var stars_scintillation_speed: float = 0.01: set = set_stars_scintillation_speed ##
 
-const POLARIS_LASER_ALIGNMENT: Vector3 = Vector3(89.4, 48.2, 0.0)
-const VEGA_LASER_ALIGNMENT: Vector3 = Vector3(38.8, -78.3, 0.0)
+# Astronomical horizontal coordinates are measured starting from the north with positive going clockwise.
+# This is counter to traditional math where "azimuth" would increase going counter-clockwise.
+# When inputting a star's known azimuth, it should be subtracted from 360 to map it to Godot's coordinates
+# and avoid negative angles. 
+const POLARIS_LASER_ALIGNMENT: Vector3 = Vector3(89.3707, 48.2213, 0.0) # Real-world azimuth is 311.7787.
+const VEGA_LASER_ALIGNMENT: Vector3 = Vector3(38.8, 281.666, 0.0) # Real-world azimuth is 78.334.
 const LASER_COLOR: Color = Color(1.0, 0.0, 0.0, 1.0)
 var deep_space_quat: Quaternion = Quaternion.IDENTITY: set = set_deep_space_quat
 var _deep_space_basis: Basis

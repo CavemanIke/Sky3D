@@ -7,8 +7,10 @@ render_mode use_debanding;
 uniform bool sky_visible = true;
 uniform bool show_azimuthal_grid = false;
 uniform vec4 azimuthal_grid_color = vec4(.871, .722, .529, 1.);
+uniform float azimuthal_grid_rotation_offset = 0.03;
 uniform bool show_equatorial_grid = false;
 uniform vec4 equatorial_grid_color = vec4(0., .75, 1., 1.);
+uniform float equatorial_grid_rotation_offset = 0.03;
 
 // Color correction
 group_uniforms General;
@@ -66,7 +68,7 @@ uniform vec4 stars_field_color: source_color = vec4(1.0);
 uniform sampler2D stars_field_texture: source_color;
 uniform bool starmap_flip_u = false;
 uniform bool starmap_flip_v = false;
-uniform vec3 sky_alignment = vec3(2.68225, -0.25995, 0.39925);
+uniform vec3 sky_alignment = vec3(2.68288, -0.25891, 0.40101);
 uniform float sky_rotation_offset = 9.38899;
 uniform float sky_rotation = 0.0; // For simulating Earth rotation.
 uniform float sky_tilt = 0.0; // For tilting the sky according to observer latitude in radians. (90° - latitude)
@@ -569,12 +571,12 @@ void sky() {
 		float grid_spacing = 0.261799; // 15 degrees
 		vec3 zenith_dir = vec3(0.0, 1.0, 0.0); // Y-axis aligned azimuthal
 		vec3 north_celestial_pole = rotationMatrix(vec3(sky_tilt, 0.0, 0.0)) * zenith_dir;
-		float rotation_angle = sky_rotation;
+		float rotation_angle = sky_rotation + sky_rotation_offset;
 		if (show_azimuthal_grid) {
-			draw_grid(EYEDIR, zenith_dir, 0.0, azimuthal_grid_color, grid_spacing, grid_thickness, col);
+			draw_grid(EYEDIR, zenith_dir, azimuthal_grid_rotation_offset, azimuthal_grid_color, grid_spacing, grid_thickness, col);
 		}
 		if (show_equatorial_grid) {
-			draw_grid(EYEDIR, north_celestial_pole, rotation_angle, equatorial_grid_color, grid_spacing, grid_thickness, col);
+			draw_grid(EYEDIR, north_celestial_pole, rotation_angle + equatorial_grid_rotation_offset, equatorial_grid_color, grid_spacing, grid_thickness, col);
 		}
 	}
 
